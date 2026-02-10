@@ -34,4 +34,12 @@ public class Person {
     public Person() {
     }
 
+    public void update(String name, String phoneNumber) {
+        if(name != null && !name.isEmpty()) {
+            this.name = name;
+        }
+        if(phoneNumber != null && !phoneNumber.isEmpty()) {
+            this.phoneNumber = phoneNumber;
+        }
+    }
 }
