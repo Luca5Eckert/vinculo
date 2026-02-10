@@ -1,7 +1,8 @@
 package com.vinculo.module.person.domain.port;
 
-
 import com.vinculo.module.person.domain.model.Person;
+
+import java.util.Optional;
 
 public interface PersonRepository {
 
@@ -14,4 +15,6 @@ public interface PersonRepository {
     boolean existsById(Long personId);
 
     void deleteById(Long personId);
+
+    Optional<Person> findById(Long personId);
 }
