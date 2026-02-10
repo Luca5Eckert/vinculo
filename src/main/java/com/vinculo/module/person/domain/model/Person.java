@@ -28,6 +28,9 @@ public class Person {
 
     private String phoneNumber;
 
+    @Builder.Default
+    private RoleUser role = RoleUser.NORMAL;
+
     @Relationship(type = "CONNECTED_WITH", direction = Relationship.Direction.OUTGOING)
     private List<Person> connections;
 
