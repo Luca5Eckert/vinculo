@@ -6,6 +6,4 @@ import org.springframework.stereotype.Component;
 public class PersonMapper {
 
 
-    public Person
-
 }
