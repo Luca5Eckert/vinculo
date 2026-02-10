@@ -50,4 +50,9 @@ public class PersonRepositoryAdapter implements PersonRepository {
         return Optional.empty();
     }
 
+    @Override
+    boolean existsConnectionBetween(Long personId, Long connectedPersonId){
+        return personRepositoryNeo4j.existsConnectionBetween(personId, connectedPersonId);
+    }
+
 }

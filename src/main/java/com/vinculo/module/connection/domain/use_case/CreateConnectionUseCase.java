@@ -21,7 +21,7 @@ public class CreateConnectionUseCase {
     }
 
     public void execute(CreateConnectionCommand command) {
-        if (connectionRepository.existsByUserIdAndConnectedUserId(command.personId(), command.personToConnectId())) {
+        if (personRepository.existsConnectionBetween(command.personId(), command.personToConnectId())) {
             throw new ConnectionAlreadyExistsException();
         }
 
@@ -37,7 +37,6 @@ public class CreateConnectionUseCase {
                 .build();
 
         person.addConnection(connection);
-
     }
 
 

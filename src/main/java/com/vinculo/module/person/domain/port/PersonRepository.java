@@ -19,4 +19,7 @@ public interface PersonRepository {
     Optional<Person> findById(Long personId);
 
     Optional<Person> findByEmail(String username);
+
+    boolean existsConnectionBetween(Long personId, Long connectedPersonId);
+
 }
