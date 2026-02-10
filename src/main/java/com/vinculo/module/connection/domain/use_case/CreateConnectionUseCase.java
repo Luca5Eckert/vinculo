@@ -21,14 +21,14 @@ public class CreateConnectionUseCase {
     }
 
     public void execute(CreateConnectionCommand command) {
-        if (connectionRepository.existsByUserIdAndConnectedUserId(command.personId(), command.connectPersonId())) {
+        if (connectionRepository.existsByUserIdAndConnectedUserId(command.personId(), command.personToConnectId())) {
             throw new ConnectionAlreadyExistsException();
         }
 
         Person person = personRepository.findById(command.personId())
                 .orElseThrow(PersonNotExistException::new);
 
-        Person personToConnect = personRepository.findById(command.connectPersonId())
+        Person personToConnect = personRepository.findById(command.personToConnectId())
                 .orElseThrow(PersonNotExistException::new);
 
         Connection connection = Connection.builder()
