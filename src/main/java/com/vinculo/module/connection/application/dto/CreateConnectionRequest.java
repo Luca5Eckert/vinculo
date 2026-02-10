@@ -1,4 +1,4 @@
-package com.vinculo.module.connection.controller.dto;
+package com.vinculo.module.connection.application.dto;
 
 import com.vinculo.module.connection.domain.model.TypeConnection;
 

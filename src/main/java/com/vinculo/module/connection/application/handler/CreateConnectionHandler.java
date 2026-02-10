@@ -1,6 +1,6 @@
-package com.vinculo.module.connection.controller.handler;
+package com.vinculo.module.connection.application.handler;
 
-import com.vinculo.module.connection.controller.dto.CreateConnectionRequest;
+import com.vinculo.module.connection.application.dto.CreateConnectionRequest;
 import com.vinculo.module.connection.domain.command.CreateConnectionCommand;
 import com.vinculo.module.connection.domain.use_case.CreateConnectionUseCase;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ public class CreateConnectionHandler {
         this.createConnectionUseCase = createConnectionUseCase;
     }
 
-    public void execute(CreateConnectionRequest request, long personId){
+    public void handle(CreateConnectionRequest request, long personId){
         CreateConnectionCommand command = new CreateConnectionCommand(
                 personId,
                 request.personToConnectId(),

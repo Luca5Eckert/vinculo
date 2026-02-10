@@ -45,4 +45,9 @@ public class PersonRepositoryAdapter implements PersonRepository {
         return personRepositoryNeo4j.findById(personId);
     }
 
+    @Override
+    public Optional<Person> findByEmail(String username) {
+        return Optional.empty();
+    }
+
 }
