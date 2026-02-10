@@ -30,7 +30,7 @@ public class PersonController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@Validated CreatePersonRequest request){
+    public ResponseEntity<Void> create(@Validated @RequestBody CreatePersonRequest request){
         createPersonHandler.handle(request);
 
         return ResponseEntity
