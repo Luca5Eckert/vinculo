@@ -1,7 +1,7 @@
 package com.vinculo.module.connection.domain.model;
 
-import com.vinculo.module.domain.model.Person;
-import com.vinculo.module.domain.model.TypeConnection;
+
+import com.vinculo.module.person.domain.model.Person;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.neo4j.core.schema.RelationshipId;
@@ -17,7 +17,7 @@ public class Connection {
     private Long id;
 
     @TargetNode
-    private com.vinculo.module.domain.model.Person person;
+    private Person person;
 
     private TypeConnection type;
 
