@@ -10,4 +10,8 @@ public interface PersonRepository {
     void save(Person person);
 
     boolean existsByEmail(String email);
+
+    boolean existsById(Long personId);
+
+    void deleteById(Long personId);
 }
