@@ -1,5 +1,6 @@
 package com.vinculo.module.person.domain.model;
 
+import com.vinculo.module.connection.domain.model.Connection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +9,9 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Node("person")
 @Builder
@@ -32,7 +35,7 @@ public class Person {
     private RoleUser role = RoleUser.NORMAL;
 
     @Relationship(type = "CONNECTED_WITH", direction = Relationship.Direction.OUTGOING)
-    private List<Person> connections;
+    private Set<Connection> connections = new HashSet<>();
 
     public Person() {
     }
@@ -45,4 +48,10 @@ public class Person {
             this.phoneNumber = phoneNumber;
         }
     }
+
+
+    public void addConnection(Connection connection) {
+        connections.add(connection);
+    }
+
 }
