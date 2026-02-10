@@ -1,4 +1,4 @@
-package com.vinculo.module.domain.model;
+package com.vinculo.module.connection.domain.model;
 
 public enum TypeConnection {
     PARTNER(1),

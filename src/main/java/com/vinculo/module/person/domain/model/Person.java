@@ -1,4 +1,4 @@
-package com.vinculo.module.domain.model;
+package com.vinculo.module.person.domain.model;
 
 import lombok.Getter;
 import lombok.Setter;
