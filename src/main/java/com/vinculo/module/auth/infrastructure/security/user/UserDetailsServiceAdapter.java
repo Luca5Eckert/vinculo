@@ -24,7 +24,7 @@ public class UserDetailsServiceAdapter implements UserDetailsService {
                 .orElseThrow(PersonNotExistException::new);
 
         List<? extends GrantedAuthority> authorities = List.of(
-                () -> "ROLE_" + person.getRole().name()
+                () -> person.getRole().name()
         );
 
         return new UserDetailsAdapter(
