@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+
+  neo4j:
+    image: neo4j:5-community
+    container_name: vinculo-db
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=${NEO4J_USER}/${NEO4J_PASSWORD}
+    volumes:
+      - ./neo4j_data:/data
+      - ./neo4j_logs:/logs
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider localhost:7474 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - vinculo-network
+
+
+  app:
+    build: .
+    container_name: vinculo-app
+    ports:
+      - "${APP_PORT}:8080"
+    environment:
+
+      - SPRING_NEO4J_URI=${NEO4J_URI}
+      - SPRING_NEO4J_AUTHENTICATION_USERNAME=${NEO4J_USER}
+      - SPRING_NEO4J_AUTHENTICATION_PASSWORD=${NEO4J_PASSWORD}
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    networks:
+      - vinculo-network
+
+networks:
+  vinculo-network:
+    driver: bridge
