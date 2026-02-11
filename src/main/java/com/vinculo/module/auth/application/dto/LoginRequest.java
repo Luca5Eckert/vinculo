@@ -1,7 +1,9 @@
 package com.vinculo.module.auth.application.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record LoginRequest(
-        String email,
-        String password
+        @NotBlank String email,
+        @NotBlank String password
 ) {
 }

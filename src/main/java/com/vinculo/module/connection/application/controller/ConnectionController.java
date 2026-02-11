@@ -6,10 +6,8 @@ import com.vinculo.module.connection.application.handler.CreateConnectionHandler
 import com.vinculo.module.connection.application.handler.GetMyConnectionsHandler;
 import com.vinculo.share.service.AuthenticationService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,7 +27,7 @@ public class ConnectionController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(CreateConnectionRequest request){
+    public ResponseEntity<Void> create(@Validated @RequestBody CreateConnectionRequest request){
         long personId = authenticationService.getAuthenticatedPersonId();
 
         createConnectionHandler.handle(request, personId);
