@@ -28,6 +28,7 @@ public class UserDetailsServiceAdapter implements UserDetailsService {
         );
 
         return new UserDetailsAdapter(
+                person.getId(),
                 person.getEmail(),
                 person.getPassword(),
                 authorities
