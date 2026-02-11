@@ -1,4 +1,4 @@
-package com.vinculo.share.security.jwt;
+package com.vinculo.module.auth.infrastructure.security.jwt;
 
 import com.vinculo.module.auth.domain.port.TokenProvider;
 import io.jsonwebtoken.Jwts;
@@ -32,13 +32,9 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     @Override
-    public String createToken(String email, long userId, Collection<? extends GrantedAuthority> grantedAuthorities) {
+    public String createToken(String email, long userId, List<String> roles) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
-
-        List<String> roles = grantedAuthorities.stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList();
 
         return Jwts.builder()
                 .setSubject(email)
