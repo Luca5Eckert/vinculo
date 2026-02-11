@@ -1,6 +1,8 @@
 package com.vinculo.module.auth.application.controller;
 
+import com.vinculo.module.auth.application.dto.LoginRequest;
 import com.vinculo.module.auth.application.dto.RegisterPersonRequest;
+import com.vinculo.module.auth.application.handler.LoginHandler;
 import com.vinculo.module.auth.application.handler.RegisterPersonHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final RegisterPersonHandler registerPersonHandler;
+    private final LoginHandler loginHandler;
 
-    public AuthController(RegisterPersonHandler registerPersonHandler) {
+    public AuthController(RegisterPersonHandler registerPersonHandler, LoginHandler loginHandler) {
         this.registerPersonHandler = registerPersonHandler;
+        this.loginHandler = loginHandler;
     }
 
     @PostMapping("/register")
@@ -27,6 +31,14 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@Validated @RequestBody LoginRequest request) {
+        String token = loginHandler.handle(request);
+
+        return ResponseEntity
+                .ok(token);
     }
 
 
