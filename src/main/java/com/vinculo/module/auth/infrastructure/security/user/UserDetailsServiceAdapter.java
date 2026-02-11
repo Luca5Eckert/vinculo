@@ -1,4 +1,4 @@
-package com.vinculo.share.security.user;
+package com.vinculo.module.auth.infrastructure.security.user;
 
 import com.vinculo.module.person.domain.exception.PersonNotExistException;
 import com.vinculo.module.person.domain.model.Person;
