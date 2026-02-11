@@ -10,7 +10,9 @@ import java.util.List;
 @Repository
 public interface ConnectionRepositoryNeo4j extends Neo4jRepository<Connection, Long> {
 
-    @Query("MATCH (p:person)-[r:CONNECTED_WITH]->(target:person) WHERE id(p) = $personId RETURN r, p, target")
+    @Query("MATCH (p1:person)-[r:CONNECTED_WITH]->(p2:person) " +
+            "WHERE id(p1) = $personId " +
+            "RETURN r, p2")
     List<Connection> findAllByPersonId(long personId);
 
 }

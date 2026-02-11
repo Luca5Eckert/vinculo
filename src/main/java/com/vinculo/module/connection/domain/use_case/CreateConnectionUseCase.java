@@ -37,6 +37,8 @@ public class CreateConnectionUseCase {
                 .build();
 
         person.addConnection(connection);
+
+        personRepository.save(person);
     }
 
 

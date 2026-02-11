@@ -1,22 +1,27 @@
 package com.vinculo.module.connection.domain.use_case;
 
 import com.vinculo.module.connection.domain.model.Connection;
-import com.vinculo.module.connection.domain.port.ConnectionRepository;
+import com.vinculo.module.person.domain.exception.PersonNotExistException;
+import com.vinculo.module.person.domain.model.Person;
+import com.vinculo.module.person.domain.port.PersonRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Set;
 
 @Component
 public class GetMyConnectionsUseCase {
 
-    private final ConnectionRepository connectionRepository;
+    private final PersonRepository personRepository;
 
-    public GetMyConnectionsUseCase(ConnectionRepository connectionRepository) {
-        this.connectionRepository = connectionRepository;
+    public GetMyConnectionsUseCase(PersonRepository personRepository) {
+        this.personRepository = personRepository;
     }
 
-    public List<Connection> execute(long personId){
-        return connectionRepository.findAllByPersonId(personId);
+    public Set<Connection> execute(long personId){
+        Person person = personRepository.findById(personId)
+                .orElseThrow(PersonNotExistException::new);
+
+        return person.getConnections();
     }
 
 }

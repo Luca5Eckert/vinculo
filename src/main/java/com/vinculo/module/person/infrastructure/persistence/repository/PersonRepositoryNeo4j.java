@@ -15,9 +15,11 @@ public interface PersonRepositoryNeo4j extends Neo4jRepository<Person, Long> {
     boolean existsByPhoneNumber(String number);
 
 
-    @Query("MATCH (p1:Person)-[:CONNECTED_WITH]-(p2:Person) " +
-            "WHERE id(p1) = $personId AND id(p2) = $connectedPersonId " +
-            "RETURN count(*) > 0")
+    @Query("""
+            MATCH (p1:person), (p2:person)
+            WHERE id(p1) = $personId AND id(p2) = $connectedPersonId
+            RETURN EXISTS((p1)-[:CONNECTED_WITH]->(p2))
+            """)
     boolean existsConnectionBetween(Long personId, Long connectedPersonId);
 
     Optional<Person> findByEmail(String email);
