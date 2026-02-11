@@ -1,7 +1,10 @@
 package com.vinculo.module.connection.infrastructure.persistence.repository;
 
+import com.vinculo.module.connection.domain.model.Connection;
 import com.vinculo.module.connection.domain.port.ConnectionRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public class ConnectionRepositoryAdapter implements ConnectionRepository {
@@ -13,4 +16,8 @@ public class ConnectionRepositoryAdapter implements ConnectionRepository {
     }
 
 
+    @Override
+    public List<Connection> findAllByPersonId(long personId) {
+        return connectionRepositoryNeo4j.findAllByPersonId(personId);
+    }
 }
