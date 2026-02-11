@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class GetMyConnectionsHandler {
@@ -23,7 +24,7 @@ public class GetMyConnectionsHandler {
 
     @Transactional(readOnly = true)
     public List<ConnectionResponse> handle(long userId) {
-        List<Connection> connections = getMyConnectionsUseCase.execute(userId);
+        var connections = getMyConnectionsUseCase.execute(userId);
 
         return connections
                 .stream()
