@@ -159,7 +159,7 @@ vinculo/
 
 Before you begin, ensure you have the following installed:
 
-- **Java 21** or higher ([Download](https://www.oracle.com/java/technologies/downloads/#java21))
+- **Java 21** (LTS) - Required for compatibility with Spring Boot 4.0.2 ([Download](https://www.oracle.com/java/technologies/downloads/#java21))
 - **Docker** and **Docker Compose** ([Download](https://docs.docker.com/get-docker/))
 - **Maven 3.9+** (optional, Maven Wrapper included)
 - **Git** for version control
