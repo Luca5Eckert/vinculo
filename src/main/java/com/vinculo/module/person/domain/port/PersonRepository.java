@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface PersonRepository {
 
-    boolean existsByNumber(String number);
+    boolean existsByPhoneNumber(String number);
 
     void save(Person person);
 

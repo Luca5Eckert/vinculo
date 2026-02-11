@@ -16,8 +16,8 @@ public class PersonRepositoryAdapter implements PersonRepository {
     }
 
     @Override
-    public boolean existsByNumber(String number) {
-        return personRepositoryNeo4j.existByNumber(number);
+    public boolean existsByPhoneNumber(String number) {
+        return personRepositoryNeo4j.existsByPhoneNumber(number);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class PersonRepositoryAdapter implements PersonRepository {
 
     @Override
     public boolean existsByEmail(String email) {
-        return personRepositoryNeo4j.existByEmail(email);
+        return personRepositoryNeo4j.existsByEmail(email);
     }
 
     @Override
@@ -46,12 +46,12 @@ public class PersonRepositoryAdapter implements PersonRepository {
     }
 
     @Override
-    public Optional<Person> findByEmail(String username) {
-        return Optional.empty();
+    public Optional<Person> findByEmail(String email) {
+        return personRepositoryNeo4j.findByEmail(email);
     }
 
     @Override
-    boolean existsConnectionBetween(Long personId, Long connectedPersonId){
+    public boolean existsConnectionBetween(Long personId, Long connectedPersonId){
         return personRepositoryNeo4j.existsConnectionBetween(personId, connectedPersonId);
     }
 

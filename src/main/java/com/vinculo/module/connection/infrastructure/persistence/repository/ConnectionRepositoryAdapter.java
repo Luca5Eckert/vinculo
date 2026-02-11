@@ -12,8 +12,5 @@ public class ConnectionRepositoryAdapter implements ConnectionRepository {
         this.connectionRepositoryNeo4j = connectionRepositoryNeo4j;
     }
 
-    @Override
-    public boolean existsByPersonIdAndConnectedPersonId(long userId, long connectedUserId) {
-        return connectionRepositoryNeo4j.existsByUserIdAndConnectedUserId(userId, connectedUserId);
-    }
+
 }

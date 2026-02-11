@@ -13,12 +13,13 @@ import java.security.Key;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
+
 
 @Component
 public class JwtTokenProvider implements TokenProvider {
 
     private final Key key;
+
     private final long validityInMilliseconds;
 
     public JwtTokenProvider(

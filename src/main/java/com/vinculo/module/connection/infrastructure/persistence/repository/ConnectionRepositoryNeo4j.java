@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ConnectionRepositoryNeo4j extends Neo4jRepository<Connection, Long> {
-
-    boolean existsByUserIdAndConnectedUserId(Long userId, Long connectedUserId);
 }
