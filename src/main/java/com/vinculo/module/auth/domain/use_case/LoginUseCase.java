@@ -1,5 +1,6 @@
 package com.vinculo.module.auth.domain.use_case;
 
+import com.vinculo.module.auth.domain.command.LoginCommand;
 import com.vinculo.module.auth.domain.model.AuthenticatedUser;
 import com.vinculo.module.auth.domain.port.AuthenticatorPort;
 import com.vinculo.module.auth.domain.port.TokenProvider;
@@ -16,8 +17,11 @@ public class LoginUseCase {
         this.tokenProvider = tokenProvider;
     }
 
-    public String execute(String email, String password) {
-        AuthenticatedUser user = authenticatorPort.authenticate(email, password);
+    public String execute(LoginCommand command) {
+        AuthenticatedUser user = authenticatorPort.authenticate(
+                command.email(),
+                command.password()
+        );
 
         return tokenProvider.createToken(
                 user.email(),
