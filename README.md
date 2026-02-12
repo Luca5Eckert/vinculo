@@ -519,6 +519,33 @@ docker run -d \
 
 ## 📚 API Documentation
 
+### API Overview
+
+The Vinculo API follows **RESTful principles** with versioned endpoints (`/v1`), JWT authentication, and JSON payloads.
+
+#### API Endpoint Summary
+
+| Category | Endpoint | Method | Auth Required | Role | Description |
+|----------|----------|--------|---------------|------|-------------|
+| **Authentication** | `/auth/register` | POST | No | - | Register new user account |
+| | `/auth/login` | POST | No | - | Authenticate and receive JWT |
+| **Person Management** | `/persons/{id}` | GET | Yes | Any | Retrieve user profile by ID |
+| | `/persons/{id}` | PUT | Yes | Owner/Admin | Update user profile |
+| | `/persons/{id}` | DELETE | Yes | Admin | Delete user account |
+| **Connections** | `/connections` | POST | Yes | Any | Create direct connection |
+| | `/connections/me` | GET | Yes | Any | Get all my connections |
+| | `/connections/{id}` | GET | Yes | Any | Get specific connection details |
+| | `/connections/{id}` | PUT | Yes | Owner | Update connection type/weight |
+| | `/connections/{id}` | DELETE | Yes | Owner | Remove connection |
+| **Connection Requests** | `/request-connections` | POST | Yes | Any | Send connection request |
+| | `/request-connections/me` | GET | Yes | Any | Get my pending requests |
+| | `/request-connections/{id}` | PUT | Yes | Target | Accept/reject request |
+
+**Response Formats**:
+- Success: `200 OK`, `201 Created`, `204 No Content`
+- Client Errors: `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found`
+- Server Errors: `500 Internal Server Error`
+
 ### Base URL
 ```
 http://localhost:8080/v1
@@ -852,6 +879,202 @@ RETURN
 ### Networking
 Both services run on a bridge network named `vinculo-network` for isolated communication.
 
+## 💡 Key Technical Concepts
+
+### 1. Graph Database vs. Relational Database
+
+Vinculo leverages Neo4j's native graph storage for fundamental architectural advantages:
+
+| Aspect | Relational (PostgreSQL/MySQL) | Graph (Neo4j) |
+|--------|-------------------------------|---------------|
+| **Relationship Storage** | Foreign keys + JOIN tables | Native relationships (edges) |
+| **Query Performance** | Degrades with JOINs (O(n²)) | Constant per hop (O(n)) |
+| **Schema Flexibility** | Rigid schema, migrations required | Flexible node/relationship properties |
+| **Traversal Queries** | Complex recursive CTEs | Native graph traversal |
+| **N-Degree Connections** | Exponentially complex | Linear complexity |
+| **Network Analysis** | Post-query processing | Built-in graph algorithms |
+
+**Example: Find Friends-of-Friends**
+```sql
+-- Relational (Complex, slow with scale)
+SELECT DISTINCT u3.*
+FROM users u1
+JOIN connections c1 ON u1.id = c1.user_id
+JOIN connections c2 ON c1.friend_id = c2.user_id
+JOIN users u3 ON c2.friend_id = u3.id
+WHERE u1.id = ? AND u3.id != ?
+```
+
+```cypher
+-- Graph (Simple, fast)
+MATCH (me:Person {id: $id})-[:CONNECTED_WITH*2]-(friend_of_friend)
+WHERE friend_of_friend.id <> $id
+RETURN DISTINCT friend_of_friend
+```
+
+### 2. Hexagonal Architecture Benefits
+
+**Problem Solved**: Traditional layered architectures create tight coupling between business logic and infrastructure.
+
+**Vinculo's Solution**:
+```
+External World (REST API, Database, Security)
+        ↓
+    Adapters (Controllers, Repositories, Encoders)
+        ↓
+    Ports (Interfaces defining contracts)
+        ↓
+    Domain (Pure business logic - framework-independent)
+```
+
+**Key Benefits**:
+1. **Testability**: Domain logic testable without databases/HTTP servers
+2. **Flexibility**: Swap Neo4j for another DB by changing adapter only
+3. **Independence**: Business rules don't depend on Spring Boot
+4. **Maintainability**: Changes to infrastructure don't affect domain
+
+### 3. Domain-Driven Design (DDD)
+
+Vinculo organizes code around **business domains**, not technical layers:
+
+**Bounded Contexts**:
+- **Person Context**: User identity, authentication, profiles
+- **Connection Context**: Direct relationships between users
+- **Request Context**: Connection request workflow
+
+**Strategic Design**:
+- Each module is self-contained with its own models, use cases, and adapters
+- Modules communicate through well-defined interfaces
+- Domain models reflect business language (Ubiquitous Language)
+
+### 4. CQRS Pattern (Command-Query Separation)
+
+**Commands** (State-changing operations):
+- `CreatePersonCommand`, `UpdatePersonCommand`
+- Validated at API boundary
+- Executed by use cases
+- Return success/failure
+
+**Queries** (Read operations):
+- `GetPersonQuery`, `GetConnectionsQuery`
+- Optimized for read performance
+- Can use different data projections
+
+### 5. Strategy Pattern for Connection Requests
+
+**Problem**: Different actions needed based on request status (Accept vs. Reject).
+
+**Solution**: Strategy pattern with polymorphic behavior:
+
+```java
+interface RequestStatusStrategy {
+    boolean supports(StatusRequestConnection status);
+    void execute(RequestConnection request, Person target);
+}
+
+class AcceptConnectionStrategy implements RequestStatusStrategy {
+    // Creates bidirectional Connection when accepted
+}
+
+class ConnectionStrategyManager {
+    // Selects appropriate strategy based on status
+}
+```
+
+### 6. JWT Stateless Authentication
+
+**Traditional Session-Based**:
+- Server stores session state
+- Not scalable (sticky sessions or session replication required)
+- CSRF protection needed
+
+**Vinculo's JWT Approach**:
+- **Stateless**: No server-side session storage
+- **Scalable**: Any instance can validate any token
+- **Self-Contained**: Token carries user identity and roles
+- **Efficient**: No database lookup on every request
+
+**Trade-off**: Cannot revoke tokens before expiration (use short expiration + refresh tokens for production).
+
+### 7. Repository Pattern
+
+**Abstraction Layer** between domain and data access:
+
+```java
+// Domain layer - Port (interface)
+interface PersonRepository {
+    Person save(Person person);
+    Optional<Person> findById(Long id);
+}
+
+// Infrastructure layer - Adapter (implementation)
+class PersonRepositoryNeo4j implements PersonRepository {
+    // Spring Data Neo4j implementation
+}
+```
+
+**Benefits**:
+- Domain doesn't depend on Neo4j specifics
+- Can swap database technology without changing business logic
+- Enables unit testing with in-memory implementations
+
+### 8. Bidirectional Relationship Management
+
+Social networks require **symmetric relationships** (A→B implies B→A):
+
+**Naive Approach** (Error-prone):
+```java
+// Create A→B
+connectionRepository.save(new Connection(personA, personB, type));
+// Manually create B→A (easy to forget!)
+connectionRepository.save(new Connection(personB, personA, type));
+```
+
+**Vinculo's Approach** (Atomic):
+```java
+// CreateConnectionUseCase ensures atomic bidirectional creation
+// Single transaction creates both A→B and B→A relationships
+// Guaranteed consistency
+```
+
+### 9. Value Objects for Type Safety
+
+Instead of using primitive strings, Vinculo uses **type-safe enums**:
+
+```java
+// ❌ Weak typing - runtime errors
+String connectionType = "FREND"; // Typo!
+
+// ✅ Strong typing - compile-time safety
+TypeConnection type = TypeConnection.FRIEND; // IDE autocomplete
+```
+
+**Value Objects**: `TypeConnection`, `StatusRequestConnection`, `RoleUser`
+- Immutable
+- Self-validating
+- Expressive domain language
+
+### 10. Dependency Injection & Inversion of Control
+
+**Principle**: High-level modules shouldn't depend on low-level modules; both should depend on abstractions.
+
+```java
+// Use case depends on abstraction (port)
+class CreateConnectionUseCase {
+    private final ConnectionRepository repository; // Interface
+    
+    // Spring injects concrete implementation (adapter) at runtime
+    public CreateConnectionUseCase(ConnectionRepository repository) {
+        this.repository = repository;
+    }
+}
+```
+
+**Benefits**:
+- Loose coupling
+- Testability (inject mocks)
+- Runtime flexibility
+
 ## 🧪 Testing
 
 The project includes a comprehensive test suite covering:
@@ -1038,22 +1261,294 @@ public class SecurityConfig {
 
 ## 🚢 Deployment
 
+### Deployment Architecture
+
+Vinculo supports multiple deployment strategies from development to enterprise-grade production.
+
+```mermaid
+graph TB
+    subgraph "Internet"
+        USERS[Users/Clients]
+    end
+    
+    subgraph "Load Balancer / API Gateway"
+        LB[Nginx / AWS ALB<br/>HTTPS Termination<br/>Rate Limiting]
+    end
+    
+    subgraph "Application Tier - Auto-Scaling"
+        APP1[Vinculo Instance 1<br/>Spring Boot Container]
+        APP2[Vinculo Instance 2<br/>Spring Boot Container]
+        APP3[Vinculo Instance N<br/>Spring Boot Container]
+    end
+    
+    subgraph "Database Tier"
+        NEO4J_PRIMARY[(Neo4j Primary<br/>Read/Write)]
+        NEO4J_REPLICA1[(Neo4j Replica 1<br/>Read-Only)]
+        NEO4J_REPLICA2[(Neo4j Replica 2<br/>Read-Only)]
+    end
+    
+    subgraph "Monitoring & Logging"
+        METRICS[Prometheus/Grafana<br/>Metrics & Dashboards]
+        LOGS[ELK Stack / CloudWatch<br/>Centralized Logging]
+    end
+    
+    subgraph "Secret Management"
+        VAULT[HashiCorp Vault /<br/>AWS Secrets Manager]
+    end
+    
+    USERS -->|HTTPS| LB
+    LB --> APP1
+    LB --> APP2
+    LB --> APP3
+    
+    APP1 --> NEO4J_PRIMARY
+    APP2 --> NEO4J_PRIMARY
+    APP3 --> NEO4J_PRIMARY
+    
+    APP1 -.->|Read Traffic| NEO4J_REPLICA1
+    APP2 -.->|Read Traffic| NEO4J_REPLICA1
+    APP3 -.->|Read Traffic| NEO4J_REPLICA2
+    
+    NEO4J_PRIMARY -.->|Replication| NEO4J_REPLICA1
+    NEO4J_PRIMARY -.->|Replication| NEO4J_REPLICA2
+    
+    APP1 --> METRICS
+    APP2 --> METRICS
+    APP3 --> METRICS
+    
+    APP1 --> LOGS
+    APP2 --> LOGS
+    APP3 --> LOGS
+    
+    APP1 -.->|Fetch Secrets| VAULT
+    APP2 -.->|Fetch Secrets| VAULT
+    APP3 -.->|Fetch Secrets| VAULT
+    
+    classDef app fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef db fill:#c8e6c9,stroke:#388e3c,stroke-width:2px
+    classDef infra fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    
+    class APP1,APP2,APP3 app
+    class NEO4J_PRIMARY,NEO4J_REPLICA1,NEO4J_REPLICA2 db
+    class LB,METRICS,LOGS,VAULT infra
+```
+
+### Deployment Options
+
+#### 1. **Docker Compose (Development/Small Scale)**
+- Single-host deployment
+- Suitable for: Development, staging, small teams
+- Scaling: Vertical only (increase container resources)
+
+```yaml
+# docker-compose.yml
+services:
+  app:
+    image: vinculo:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - NEO4J_URI=bolt://neo4j:7687
+  neo4j:
+    image: neo4j:5-community
+    volumes:
+      - neo4j_data:/data
+```
+
+#### 2. **Kubernetes (Production/Enterprise)**
+- Multi-host orchestration
+- Suitable for: Production, enterprise, high availability
+- Scaling: Horizontal auto-scaling based on metrics
+
+**Key Components**:
+- **Deployment**: Multiple app replicas with health checks
+- **Service**: Load balancing across pods
+- **Ingress**: HTTPS termination and routing
+- **ConfigMaps/Secrets**: Configuration management
+- **StatefulSet**: Neo4j database cluster
+- **PersistentVolumes**: Database storage
+
+#### 3. **Cloud Platforms**
+
+| Platform | Service | Configuration |
+|----------|---------|---------------|
+| **AWS** | ECS/EKS + RDS/Neo4j Aura | Application on ECS/EKS, Neo4j Aura for DB |
+| **Google Cloud** | GKE + Neo4j Aura | Kubernetes on GKE, managed Neo4j |
+| **Azure** | AKS + Container Instances | Kubernetes on AKS, Neo4j on VMs |
+| **Heroku** | Containers + Add-ons | Heroku Containers + Neo4j add-on |
+
 ### Production Considerations
 
-1. **Environment Variables**: Use secure secret management (e.g., AWS Secrets Manager, HashiCorp Vault)
-2. **Database Backups**: Configure Neo4j backup strategy
-3. **Logging**: Integrate with centralized logging (ELK, CloudWatch)
-4. **Monitoring**: Set up APM tools (New Relic, Datadog)
-5. **Load Balancing**: Use reverse proxy (Nginx, HAProxy)
-6. **HTTPS**: Configure SSL/TLS certificates
+#### Security
+1. **Environment Variables**: Use secure secret management
+   - AWS Secrets Manager
+   - HashiCorp Vault
+   - Kubernetes Secrets with encryption at rest
+   
+2. **Network Security**:
+   - VPC/Private subnets for database
+   - Security groups restricting access
+   - WAF (Web Application Firewall) for API protection
+
+3. **HTTPS/TLS**:
+   - Certificate management (Let's Encrypt, AWS ACM)
+   - TLS 1.3 minimum
+   - HSTS headers enabled
+
+#### High Availability
+1. **Database**:
+   - Neo4j Causal Cluster (3+ nodes)
+   - Read replicas for query distribution
+   - Automated backups (daily snapshots)
+   
+2. **Application**:
+   - Minimum 2 instances across availability zones
+   - Health checks and automatic recovery
+   - Graceful shutdown handling
+
+#### Monitoring & Observability
+1. **Metrics** (Prometheus/Grafana):
+   - Request rate, latency, error rate
+   - JVM metrics (heap, GC, threads)
+   - Database connection pool stats
+   - Business metrics (connections created, logins)
+
+2. **Logging** (ELK/CloudWatch):
+   - Structured JSON logging
+   - Correlation IDs for request tracing
+   - Log aggregation from all instances
+   - Alert on error patterns
+
+3. **Tracing** (Jaeger/Zipkin):
+   - Distributed tracing for request flows
+   - Performance bottleneck identification
+
+#### Performance Optimization
+1. **Database**:
+   - Neo4j indexes on frequently queried fields
+   - Connection pooling tuning
+   - Query optimization with EXPLAIN/PROFILE
+   
+2. **Application**:
+   - Spring Boot Actuator for health checks
+   - JVM tuning (heap size, GC algorithm)
+   - API response caching (Redis)
+   - Rate limiting to prevent abuse
+
+3. **Infrastructure**:
+   - CDN for static assets
+   - Reverse proxy caching (Nginx)
+   - Load balancer connection pooling
+
+#### Backup & Disaster Recovery
+1. **Database Backups**:
+   - Automated daily snapshots
+   - Point-in-time recovery capability
+   - Cross-region backup replication
+   - Backup retention policy (30 days)
+
+2. **Disaster Recovery**:
+   - RTO (Recovery Time Objective): < 1 hour
+   - RPO (Recovery Point Objective): < 15 minutes
+   - Regular DR drills
 
 ### Docker Compose Production
 
-Update `docker-compose.yml` for production:
-- Remove port mappings for internal services
-- Add health checks
-- Configure resource limits
-- Use external volumes for data persistence
+For production deployment with Docker Compose, enhance the configuration:
+
+```yaml
+version: '3.8'
+
+services:
+  app:
+    image: vinculo:${VERSION}
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    environment:
+      - SPRING_PROFILES_ACTIVE=production
+      - NEO4J_URI=bolt://neo4j:7687
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - vinculo-network
+    
+  neo4j:
+    image: neo4j:5-enterprise
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+    environment:
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD}
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_backups:/backups
+    networks:
+      - vinculo-network
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - app
+    networks:
+      - vinculo-network
+
+volumes:
+  neo4j_data:
+    driver: local
+  neo4j_logs:
+  neo4j_backups:
+
+networks:
+  vinculo-network:
+    driver: bridge
+```
+
+### CI/CD Pipeline
+
+```mermaid
+graph LR
+    A[Git Push] --> B[GitHub Actions]
+    B --> C[Build & Test]
+    C --> D[Security Scan<br/>CodeQL/Snyk]
+    D --> E[Docker Build]
+    E --> F[Push to Registry]
+    F --> G{Environment}
+    G -->|Dev| H[Deploy to Dev]
+    G -->|Staging| I[Deploy to Staging]
+    G -->|Prod| J[Deploy to Production]
+    J --> K[Health Check]
+    K --> L[Rollback on Failure]
+    K --> M[Success]
+```
+
+**Recommended Tools**:
+- **CI/CD**: GitHub Actions, GitLab CI, Jenkins
+- **Container Registry**: Docker Hub, AWS ECR, GitHub Container Registry
+- **Infrastructure as Code**: Terraform, CloudFormation
+- **Configuration Management**: Ansible, Chef
 
 ## 🤝 Contributing
 
