@@ -4,6 +4,7 @@ import com.vinculo.module.auth.domain.model.AuthenticatedUser;
 import com.vinculo.module.request_connection.application.dto.SendRequestConnectionRequest;
 import com.vinculo.module.request_connection.application.dto.UpdateStatusRequestConnectionRequest;
 import com.vinculo.module.request_connection.application.handler.SendRequestConnectionHandler;
+import com.vinculo.module.request_connection.application.handler.UpdateStatusRequestConnectionHandler;
 import com.vinculo.share.service.AuthenticationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +16,13 @@ import org.springframework.web.bind.annotation.*;
 public class RequestConnectionController {
 
     private final SendRequestConnectionHandler sendRequestConnectionHandler;
+    private final UpdateStatusRequestConnectionHandler updateStatusRequestConnectionHandler;
 
     private final AuthenticationService authenticationService;
 
-    public RequestConnectionController(SendRequestConnectionHandler sendRequestConnectionHandler, AuthenticationService authenticationService) {
+    public RequestConnectionController(SendRequestConnectionHandler sendRequestConnectionHandler, UpdateStatusRequestConnectionHandler updateStatusRequestConnectionHandler, AuthenticationService authenticationService) {
         this.sendRequestConnectionHandler = sendRequestConnectionHandler;
+        this.updateStatusRequestConnectionHandler = updateStatusRequestConnectionHandler;
         this.authenticationService = authenticationService;
     }
 
@@ -44,10 +47,15 @@ public class RequestConnectionController {
     ) {
         long personTargetId = authenticationService.getAuthenticatedPersonId();
 
-        updateRequestConnectionHandler.handle(requestConnectionId, personTargetId);
+        updateStatusRequestConnectionHandler.handle(
+                requestConnectionId,
+                personTargetId,
+                request
+        );
 
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
     }
+
 }
