@@ -22,11 +22,7 @@
 - [Prerequisites](#-prerequisites)
 - [Getting Started](#-getting-started)
 - [API Documentation](#-api-documentation)
-- [Testing](#-testing)
-- [Monitoring & Observability](#-monitoring--observability)
-- [Deployment](#-deployment)
 - [Contributing](#-contributing)
-- [Roadmap](#️-roadmap)
 
 ---
 
