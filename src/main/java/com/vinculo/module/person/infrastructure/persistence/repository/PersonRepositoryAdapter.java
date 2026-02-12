@@ -2,6 +2,8 @@ package com.vinculo.module.person.infrastructure.persistence.repository;
 
 import com.vinculo.module.person.domain.model.Person;
 import com.vinculo.module.person.domain.port.PersonRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -53,6 +55,16 @@ public class PersonRepositoryAdapter implements PersonRepository {
     @Override
     public boolean existsConnectionBetween(Long personId, Long connectedPersonId){
         return personRepositoryNeo4j.existsConnectionBetween(personId, connectedPersonId);
+    }
+
+    @Override
+    public Page<Person> findAll(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(
+                page,
+                size
+        );
+
+        return personRepositoryNeo4j.findAll(pageRequest);
     }
 
 }

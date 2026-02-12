@@ -3,6 +3,7 @@ package com.vinculo.share.exception;
 import com.vinculo.module.connection.domain.exception.ConnectionException;
 import com.vinculo.module.person.domain.exception.PersonException;
 import com.vinculo.module.person.domain.exception.email.EmailAlreadyInUseException;
+import com.vinculo.module.request_connection.domain.exception.RequestConnectionException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
 
-    @ExceptionHandler({PersonException.class, ConnectionException.class})
+    @ExceptionHandler({PersonException.class, ConnectionException.class, RequestConnectionException.class})
     public ResponseEntity<ApiErrorResponse> handleDomainExceptions(RuntimeException ex, HttpServletRequest request) {
         log.warn("Domain exception at {}: {}", request.getRequestURI(), ex.getMessage());
 

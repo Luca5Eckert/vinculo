@@ -1,4 +1,4 @@
-package com.vinculo.module.request_connection.domain.servicce;
+package com.vinculo.module.request_connection.domain.service;
 
 import com.vinculo.module.request_connection.domain.model.RequestConnection;
 import com.vinculo.module.request_connection.domain.strategy.RequestStatusStrategy;

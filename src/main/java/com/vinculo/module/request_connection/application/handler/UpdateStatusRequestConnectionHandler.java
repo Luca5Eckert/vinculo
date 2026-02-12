@@ -2,7 +2,7 @@ package com.vinculo.module.request_connection.application.handler;
 
 import com.vinculo.module.request_connection.application.dto.UpdateStatusRequestConnectionRequest;
 import com.vinculo.module.request_connection.domain.command.UpdateStatusRequestConnectionCommand;
-import com.vinculo.module.request_connection.domain.servicce.ConnectionStrategyManager;
+import com.vinculo.module.request_connection.domain.service.ConnectionStrategyManager;
 import com.vinculo.module.request_connection.domain.use_case.UpdateStatusRequestConnectionUseCase;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
