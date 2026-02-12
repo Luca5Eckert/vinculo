@@ -6,6 +6,4 @@ import java.util.List;
 
 public interface ConnectionRepository {
     List<Connection> findAllByPersonId(long personId);
-
-    boolean existsBetweenPersons(long personSenderId, long personReceiverId);
 }

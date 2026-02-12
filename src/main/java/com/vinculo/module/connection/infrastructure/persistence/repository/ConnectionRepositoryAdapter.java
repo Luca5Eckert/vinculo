@@ -20,4 +20,5 @@ public class ConnectionRepositoryAdapter implements ConnectionRepository {
     public List<Connection> findAllByPersonId(long personId) {
         return connectionRepositoryNeo4j.findAllByPersonId(personId);
     }
+
 }

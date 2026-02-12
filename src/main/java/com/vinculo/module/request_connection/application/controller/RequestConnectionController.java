@@ -1,6 +1,5 @@
 package com.vinculo.module.request_connection.application.controller;
 
-import com.vinculo.module.auth.domain.model.AuthenticatedUser;
 import com.vinculo.module.request_connection.application.dto.RequestConnectionResponse;
 import com.vinculo.module.request_connection.application.dto.SendRequestConnectionRequest;
 import com.vinculo.module.request_connection.application.dto.UpdateStatusRequestConnectionRequest;
@@ -49,7 +48,7 @@ public class RequestConnectionController {
     @PutMapping("/{requestConnectionId}")
     public ResponseEntity<Void> update(
             @PathVariable(value = "requestConnectionId") Long requestConnectionId,
-            UpdateStatusRequestConnectionRequest request
+            @Validated @RequestBody UpdateStatusRequestConnectionRequest request
     ) {
         long personTargetId = authenticationService.getAuthenticatedPersonId();
 
