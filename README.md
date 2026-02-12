@@ -6,6 +6,29 @@
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.2-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Neo4j](https://img.shields.io/badge/Neo4j-5.0-blue.svg)](https://neo4j.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Architecture](https://img.shields.io/badge/architecture-Hexagonal-blueviolet.svg)](https://alistair.cockburn.us/hexagonal-architecture/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://www.docker.com/)
+
+## 📑 Table of Contents
+
+- [Overview](#-overview)
+- [Key Features](#-key-features)
+- [Technology Stack](#️-technology-stack)
+- [Architecture](#️-architecture)
+- [Graph Database Schema](#️-graph-database-schema)
+- [Security Architecture](#-security-architecture)
+- [Docker Configuration](#-docker-configuration)
+- [Key Technical Concepts](#-key-technical-concepts)
+- [Prerequisites](#-prerequisites)
+- [Getting Started](#-getting-started)
+- [API Documentation](#-api-documentation)
+- [Testing](#-testing)
+- [Monitoring & Observability](#-monitoring--observability)
+- [Deployment](#-deployment)
+- [Contributing](#-contributing)
+- [Roadmap](#️-roadmap)
+
+---
 
 ## 🎯 Overview
 
@@ -1096,13 +1119,87 @@ The project includes a comprehensive test suite covering:
 
 ## 📊 Monitoring & Observability
 
-Spring Boot Actuator endpoints are available for monitoring:
+Vinculo provides **comprehensive observability** through Spring Boot Actuator and integration with industry-standard monitoring tools.
 
-- `/actuator/health` - Application health status
-- `/actuator/info` - Application information
-- `/actuator/metrics` - Application metrics
+### Built-in Actuator Endpoints
 
-Access these endpoints after starting the application.
+Access monitoring endpoints after starting the application:
+
+| Endpoint | Purpose | Details |
+|----------|---------|---------|
+| `/actuator/health` | Health check | Liveness/readiness probes for orchestration |
+| `/actuator/info` | Application info | Version, build details, custom metadata |
+| `/actuator/metrics` | Application metrics | JVM, HTTP, custom business metrics |
+| `/actuator/prometheus` | Prometheus scraping | Time-series metrics in Prometheus format |
+| `/actuator/loggers` | Dynamic log levels | Runtime log level adjustment |
+| `/actuator/threaddump` | Thread dump | Debugging stuck/deadlocked threads |
+| `/actuator/heapdump` | Memory dump | Memory leak analysis |
+
+### Key Metrics to Monitor
+
+#### Application Metrics
+- **Request Rate**: `http.server.requests.count`
+- **Response Time**: `http.server.requests.duration` (p50, p95, p99)
+- **Error Rate**: `http.server.requests.error.count`
+- **Active Connections**: Neo4j connection pool usage
+
+#### JVM Metrics
+- **Heap Memory**: `jvm.memory.used` / `jvm.memory.max`
+- **GC Activity**: `jvm.gc.pause` duration and frequency
+- **Thread Count**: `jvm.threads.live`, `jvm.threads.daemon`
+- **CPU Usage**: `process.cpu.usage`
+
+#### Business Metrics (Custom)
+- Connection creation rate
+- User registration rate
+- Authentication success/failure ratio
+- Average connections per user
+
+### Integration with Monitoring Tools
+
+#### Prometheus + Grafana
+```yaml
+# Add to application.yml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+```
+
+**Grafana Dashboards**: Import JVM (Micrometer) and Spring Boot dashboards.
+
+#### ELK Stack (Elasticsearch, Logstash, Kibana)
+```properties
+# Structured JSON logging for log aggregation
+logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %msg%n
+logging.level.com.vinculo=INFO
+```
+
+#### Cloud-Native Monitoring
+- **AWS CloudWatch**: Metrics and logs via CloudWatch agent
+- **Datadog**: APM with distributed tracing
+- **New Relic**: Application performance monitoring
+- **Jaeger/Zipkin**: Distributed request tracing
+
+### Alerting Strategy
+
+**Critical Alerts** (PagerDuty/OpsGenie):
+- Service down (health check failing)
+- Error rate > 5%
+- Response time p99 > 2 seconds
+- Memory usage > 90%
+- Database connection pool exhausted
+
+**Warning Alerts** (Slack/Email):
+- Error rate > 1%
+- GC pauses > 1 second
+- Disk space < 20%
+- SSL certificate expiring < 30 days
 
 ## 🔒 Security Architecture
 
@@ -1590,19 +1687,55 @@ For support, please:
 
 ## 🗺️ Roadmap
 
-Future enhancements planned:
+### Planned Enhancements
 
-- [ ] GraphQL API for flexible querying
-- [ ] Real-time notifications via WebSocket
-- [ ] Advanced graph algorithms (shortest path, community detection)
-- [ ] Interactive web UI for network visualization
-- [ ] Mobile applications (iOS/Android)
-- [ ] AI-powered connection recommendations
-- [ ] Import/Export functionality
-- [ ] Privacy controls and connection visibility settings
-- [ ] Analytics dashboard
-- [ ] Multi-language support
+#### Phase 1: API Enhancement (Q2 2026)
+- [ ] **GraphQL API**: Flexible querying with field-level control
+- [ ] **API Rate Limiting**: Request throttling with Redis
+- [ ] **API Versioning**: v2 endpoint with breaking changes support
+- [ ] **Webhook System**: Event-driven notifications for integrations
+
+#### Phase 2: Real-Time Features (Q3 2026)
+- [ ] **WebSocket Integration**: Real-time connection updates
+- [ ] **Push Notifications**: Mobile push via Firebase/APNs
+- [ ] **Live Activity Feed**: Real-time network events stream
+- [ ] **Online Status**: Presence detection for active users
+
+#### Phase 3: Advanced Graph Analytics (Q4 2026)
+- [ ] **Graph Algorithms**:
+  - Shortest path calculation between any two users
+  - Community detection (Louvain, Label Propagation)
+  - Centrality metrics (PageRank, Betweenness)
+  - Link prediction for connection recommendations
+- [ ] **Network Insights Dashboard**: Visual analytics for network structure
+- [ ] **AI-Powered Recommendations**: ML-based connection suggestions
+
+#### Phase 4: User Experience (Q1 2027)
+- [ ] **Interactive Web UI**: D3.js/Cytoscape.js graph visualization
+- [ ] **Mobile Applications**: Native iOS/Android apps with React Native
+- [ ] **Import/Export**: LinkedIn, Facebook data import
+- [ ] **Privacy Controls**: Granular visibility settings per connection
+- [ ] **Multi-tenancy**: Organization-level isolated networks
+
+#### Phase 5: Enterprise Features (Q2 2027)
+- [ ] **SSO Integration**: SAML 2.0, OAuth2 enterprise providers
+- [ ] **Audit Logging**: Comprehensive compliance logs
+- [ ] **Advanced RBAC**: Custom roles and permissions
+- [ ] **Data Residency**: Multi-region deployment support
+- [ ] **Analytics API**: Programmatic access to network metrics
+
+#### Long-Term Vision
+- [ ] Federated Identity: Cross-platform connection portability
+- [ ] Blockchain Integration: Verifiable connection history
+- [ ] Natural Language Processing: Automatic relationship type inference
+- [ ] Multi-language Support: i18n for global deployment
 
 ---
 
-**Built with ❤️ using Spring Boot and Neo4j**
+<div align="center">
+
+**Built with ❤️ and serious engineering using Spring Boot and Neo4j**
+
+*Vinculo - Transform Connections into Intelligence*
+
+</div>
