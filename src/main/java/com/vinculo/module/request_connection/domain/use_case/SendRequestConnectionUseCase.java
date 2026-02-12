@@ -5,6 +5,7 @@ import com.vinculo.module.person.domain.model.Person;
 import com.vinculo.module.person.domain.port.PersonRepository;
 import com.vinculo.module.request_connection.domain.command.SendRequestConnectionCommand;
 import com.vinculo.module.request_connection.domain.exception.RequestConnectionAlreadyExistsException;
+import com.vinculo.module.request_connection.domain.exception.RequesterAndTargetCannotBeTheSameException;
 import com.vinculo.module.request_connection.domain.model.RequestConnection;
 import com.vinculo.module.request_connection.domain.model.StatusRequestConnection;
 import com.vinculo.module.request_connection.domain.port.RequestConnectionRepository;
@@ -22,11 +23,16 @@ public class SendRequestConnectionUseCase {
     }
 
     public void execute(SendRequestConnectionCommand command) {
+        if(command.personRequesterId() == command.personTargetId()){
+            throw new RequesterAndTargetCannotBeTheSameException();
+        }
+
         Person personRequester = personRepository.findById(command.personRequesterId())
                 .orElseThrow(PersonNotExistException::new);
 
         Person personTarget = personRepository.findById(command.personTargetId())
                 .orElseThrow(PersonNotExistException::new);
+
 
         verifyExistingConnection(command.personRequesterId(), command.personTargetId());
 
