@@ -28,7 +28,7 @@
 
 ## 🎯 Overview
 
-**Vinculo** (Portuguese for "bond" or "connection") is an **enterprise-grade social network platform** engineered to transform abstract relationships into a quantifiable, visual graph structure. Built on graph database technology and hexagonal architecture, Vinculo provides deep insights into personal and professional networks through native relationship modeling.
+**Vinculo** (Portuguese for "bond" or "connection") is an **social network platform** engineered to transform abstract relationships into a quantifiable, visual graph structure. Built on graph database technology and hexagonal architecture, Vinculo provides deep insights into personal and professional networks through native relationship modeling.
 
 ### Core Value Proposition
 
