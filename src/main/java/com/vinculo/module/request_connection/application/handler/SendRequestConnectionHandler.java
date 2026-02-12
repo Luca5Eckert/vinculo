@@ -4,6 +4,7 @@ import com.vinculo.module.request_connection.application.dto.SendRequestConnecti
 import com.vinculo.module.request_connection.domain.command.SendRequestConnectionCommand;
 import com.vinculo.module.request_connection.domain.use_case.SendRequestConnectionUseCase;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class SendRequestConnectionHandler {
@@ -14,6 +15,7 @@ public class SendRequestConnectionHandler {
         this.sendRequestConnectionUseCase = sendRequestConnectionUseCase;
     }
 
+    @Transactional
     public void handle(Long personRequesterId, Long personTargetId, SendRequestConnectionRequest request) {
         SendRequestConnectionCommand command = new SendRequestConnectionCommand(
                 personRequesterId,

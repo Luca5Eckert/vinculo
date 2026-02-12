@@ -14,7 +14,6 @@ public interface PersonRepositoryNeo4j extends Neo4jRepository<Person, Long> {
 
     boolean existsByPhoneNumber(String number);
 
-
     @Query("""
             MATCH (p1:person), (p2:person)
             WHERE id(p1) = $personId AND id(p2) = $connectedPersonId

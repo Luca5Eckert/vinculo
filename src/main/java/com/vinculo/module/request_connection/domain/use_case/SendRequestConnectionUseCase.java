@@ -22,13 +22,13 @@ public class SendRequestConnectionUseCase {
     }
 
     public void execute(SendRequestConnectionCommand command) {
-        Person personRequester = personRepository.findById(command.senderId())
+        Person personRequester = personRepository.findById(command.personRequesterId())
                 .orElseThrow(PersonNotExistException::new);
 
-        Person personTarget = personRepository.findById(command.personTarget())
+        Person personTarget = personRepository.findById(command.personTargetId())
                 .orElseThrow(PersonNotExistException::new);
 
-        verifyExistingConnection(command.senderId(), command.personTarget());
+        verifyExistingConnection(command.personRequesterId(), command.personTargetId());
 
         RequestConnection requestConnection = RequestConnection.builder()
                 .requester(personRequester)
