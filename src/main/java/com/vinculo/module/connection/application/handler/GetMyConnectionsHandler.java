@@ -2,13 +2,11 @@ package com.vinculo.module.connection.application.handler;
 
 import com.vinculo.module.connection.application.dto.ConnectionResponse;
 import com.vinculo.module.connection.application.mapper.ConnectionMapper;
-import com.vinculo.module.connection.domain.model.Connection;
 import com.vinculo.module.connection.domain.use_case.GetMyConnectionsUseCase;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class GetMyConnectionsHandler {
