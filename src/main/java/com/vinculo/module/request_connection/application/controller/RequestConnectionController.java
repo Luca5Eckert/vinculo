@@ -2,6 +2,7 @@ package com.vinculo.module.request_connection.application.controller;
 
 import com.vinculo.module.auth.domain.model.AuthenticatedUser;
 import com.vinculo.module.request_connection.application.dto.SendRequestConnectionRequest;
+import com.vinculo.module.request_connection.application.dto.UpdateStatusRequestConnectionRequest;
 import com.vinculo.module.request_connection.application.handler.SendRequestConnectionHandler;
 import com.vinculo.share.service.AuthenticationService;
 import org.springframework.http.HttpStatus;
@@ -36,4 +37,17 @@ public class RequestConnectionController {
                 .build();
     }
 
+    @PutMapping("/{requestConnectionId}")
+    public ResponseEntity<Void> update(
+            @PathVariable(value = "requestConnectionId") Long requestConnectionId,
+            UpdateStatusRequestConnectionRequest request
+    ) {
+        long personTargetId = authenticationService.getAuthenticatedPersonId();
+
+        updateRequestConnectionHandler.handle(requestConnectionId, personTargetId);
+
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
 }
