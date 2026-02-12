@@ -15,24 +15,13 @@ import java.util.List;
 @RequestMapping("/v1/connections")
 public class ConnectionController {
 
-    private final CreateConnectionHandler createConnectionHandler;
     private final GetMyConnectionsHandler getMyConnectionsHandler;
 
     private final AuthenticationService authenticationService;
 
-    public ConnectionController(CreateConnectionHandler createConnectionHandler, GetMyConnectionsHandler getMyConnectionsHandler, AuthenticationService authenticationService) {
-        this.createConnectionHandler = createConnectionHandler;
+    public ConnectionController(GetMyConnectionsHandler getMyConnectionsHandler, AuthenticationService authenticationService) {
         this.getMyConnectionsHandler = getMyConnectionsHandler;
         this.authenticationService = authenticationService;
-    }
-
-    @PostMapping
-    public ResponseEntity<Void> create(@Validated @RequestBody CreateConnectionRequest request){
-        long personId = authenticationService.getAuthenticatedPersonId();
-
-        createConnectionHandler.handle(request, personId);
-
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/me")
