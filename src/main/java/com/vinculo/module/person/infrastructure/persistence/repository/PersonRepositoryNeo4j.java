@@ -23,4 +23,12 @@ public interface PersonRepositoryNeo4j extends Neo4jRepository<Person, Long> {
 
     Optional<Person> findByEmail(String email);
 
+    @Override
+    @Query("""
+        MATCH (p:Person) WHERE id(p) = $personId
+        OPTIONAL MATCH (p)-[:FROM|TO]-(r:RequestConnection)
+        DETACH DELETE r, p
+    """)
+    void deleteById(Long id);
+
 }
