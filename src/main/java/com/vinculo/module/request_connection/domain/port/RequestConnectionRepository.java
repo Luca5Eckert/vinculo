@@ -13,4 +13,8 @@ public interface RequestConnectionRepository {
     Optional<RequestConnection> findById(long id);
 
     List<RequestConnection> findAllByTargetId(long personId);
+
+    Optional<RequestConnection> findByAnyRequesterOrTarget(long requesterId, long targetId);
+
+    void delete(RequestConnection existingRequest);
 }

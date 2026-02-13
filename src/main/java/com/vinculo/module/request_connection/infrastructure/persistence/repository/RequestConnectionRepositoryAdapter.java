@@ -35,4 +35,14 @@ public class RequestConnectionRepositoryAdapter implements RequestConnectionRepo
     public List<RequestConnection> findAllByTargetId(long personId) {
         return requestConnectionRepositoryNeo4j.findAllByTargetId(personId);
     }
+
+    @Override
+    public Optional<RequestConnection> findByAnyRequesterOrTarget(long requesterId, long targetId) {
+        return requestConnectionRepositoryNeo4j.findByAnyRequesterOrTarget(requesterId, targetId);
+    }
+
+    @Override
+    public void delete(RequestConnection existingRequest) {
+        requestConnectionRepositoryNeo4j.delete(existingRequest);
+    }
 }

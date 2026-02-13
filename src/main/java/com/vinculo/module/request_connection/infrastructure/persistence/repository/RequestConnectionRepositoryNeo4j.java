@@ -2,9 +2,11 @@ package com.vinculo.module.request_connection.infrastructure.persistence.reposit
 
 import com.vinculo.module.request_connection.domain.model.RequestConnection;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
+import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RequestConnectionRepositoryNeo4j extends Neo4jRepository<RequestConnection, Long> {
@@ -13,4 +15,9 @@ public interface RequestConnectionRepositoryNeo4j extends Neo4jRepository<Reques
 
     List<RequestConnection> findAllByTargetId(Long targetId);
 
+    @Query("MATCH (p1:Person)-[f:FROM]->(r:RequestConnection)-[t:TO]->(p2:Person) " +
+            "WHERE (id(p1) = $requesterId AND id(p2) = $targetId) " +
+            "OR (id(p1) = $targetId AND id(p2) = $requesterId) " +
+            "RETURN r, f, t, p1, p2")
+    Optional<RequestConnection> findByAnyRequesterOrTarget(long requesterId, long targetId);
 }

@@ -21,4 +21,9 @@ public class ConnectionRepositoryAdapter implements ConnectionRepository {
         return connectionRepositoryNeo4j.findAllByPersonId(personId);
     }
 
+    @Override
+    public boolean existsBetween(long requesterPersonId, long targetPersonId) {
+        return connectionRepositoryNeo4j.existsBetween(requesterPersonId, targetPersonId);
+    }
+
 }

@@ -23,7 +23,7 @@ public class SendRequestConnectionUseCase {
     }
 
     public void execute(SendRequestConnectionCommand command) {
-        if(command.personRequesterId() == command.personTargetId()){
+        if (command.personRequesterId() == command.personTargetId()) {
             throw new RequesterAndTargetCannotBeTheSameException();
         }
 
@@ -33,22 +33,33 @@ public class SendRequestConnectionUseCase {
         Person personTarget = personRepository.findById(command.personTargetId())
                 .orElseThrow(PersonNotExistException::new);
 
-
-        verifyExistingConnection(command.personRequesterId(), command.personTargetId());
+        requestConnectionRepository.findByAnyRequesterOrTarget(command.personRequesterId(), command.personTargetId())
+                .ifPresent(existingRequest -> handleExistingRequest(existingRequest, command.personRequesterId()));
 
         RequestConnection requestConnection = RequestConnection.builder()
                 .requester(personRequester)
                 .target(personTarget)
                 .type(command.typeConnection())
                 .status(StatusRequestConnection.PENDING)
+                .createdAt(java.time.LocalDateTime.now())
                 .build();
 
         requestConnectionRepository.save(requestConnection);
     }
 
-    private void verifyExistingConnection(long personSenderId, long personReceiverId) {
-        if(requestConnectionRepository.existsBySenderIdAndReceiverId(personSenderId, personReceiverId)){
-            throw new RequestConnectionAlreadyExistsException();
+    private void handleExistingRequest(RequestConnection existingRequest, long currentRequesterId) {
+        if (existingRequest.getStatus() != StatusRequestConnection.REJECTED) {
+            throw new RequestConnectionAlreadyExistsException(
+                    "A connection request is already active or accepted between these users."
+            );
         }
+
+        if (existingRequest.getRequester().getId() == currentRequesterId) {
+            throw new RequestConnectionAlreadyExistsException(
+                    "Your previous request was rejected. You cannot send a new one to this user."
+            );
+        }
+
+        requestConnectionRepository.delete(existingRequest);
     }
 }
