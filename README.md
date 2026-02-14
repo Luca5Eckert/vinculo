@@ -11,12 +11,21 @@
 - [Overview](#-overview)
 - [Features](#-features)
 - [Technology Stack](#-technology-stack)
-- [Architecture](#-architecture)
+- [Architecture](#️-architecture)
+  - [Hexagonal Architecture Overview](#hexagonal-architecture-overview)
+  - [DDD Module Structure](#ddd-module-structure)
+  - [Request Flow](#request-flow-controller--handler--use-case--command)
+  - [Layer Responsibilities](#layer-responsibilities)
+  - [Dependency Flow](#dependency-flow)
 - [Prerequisites](#-prerequisites)
 - [Getting Started](#-getting-started)
 - [API Documentation](#-api-documentation)
-- [Database Schema](#-database-schema)
+- [Database Schema](#️-database-schema)
+- [Application Workflows](#-application-workflows)
+  - [Authentication Flow](#authentication-flow)
+  - [Connection Request Workflow](#connection-request-workflow)
 - [Security](#-security)
+- [Development](#-development)
 - [Contributing](#-contributing)
 
 ## 🎯 Overview
@@ -79,39 +88,297 @@ Traditional relational databases use JOIN operations to query relationships, whi
 
 ## 🏗️ Architecture
 
-Vinculo follows **Hexagonal Architecture** (Ports and Adapters), organizing code into clear layers:
+Vinculo follows **Clean Architecture** principles with **Hexagonal Architecture** (Ports and Adapters) and **Domain-Driven Design (DDD)** modular organization.
+
+### Hexagonal Architecture Overview
+
+The application is structured in concentric layers where dependencies point inward, ensuring business logic remains independent of external concerns:
+
+```mermaid
+graph TB
+    subgraph "External Layer"
+        REST[REST Controllers]
+        DB[(Neo4j Database)]
+        SEC[Spring Security]
+        JWT[JWT Provider]
+    end
+    
+    subgraph "Application Layer - Adapters"
+        CTRL[Controllers]
+        HANDLER[Handlers]
+        REPO_IMPL[Repository Adapters]
+        SEC_ADAPTER[Security Adapters]
+    end
+    
+    subgraph "Domain Layer - Core Business Logic"
+        UC[Use Cases]
+        CMD[Commands]
+        MODEL[Domain Models]
+        PORT[Ports/Interfaces]
+    end
+    
+    REST --> CTRL
+    CTRL --> HANDLER
+    HANDLER --> UC
+    UC --> CMD
+    UC --> PORT
+    REPO_IMPL -.implements.-> PORT
+    SEC_ADAPTER -.implements.-> PORT
+    DB --> REPO_IMPL
+    SEC --> SEC_ADAPTER
+    JWT --> SEC_ADAPTER
+    UC --> MODEL
+    
+    classDef external fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef adapter fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef domain fill:#e8f5e9,stroke:#388e3c,stroke-width:3px
+    
+    class REST,DB,SEC,JWT external
+    class CTRL,HANDLER,REPO_IMPL,SEC_ADAPTER adapter
+    class UC,CMD,MODEL,PORT domain
+```
+
+### DDD Module Structure
+
+Each business capability is organized as an independent module following Domain-Driven Design principles:
+
+```mermaid
+graph LR
+    subgraph "Module Structure"
+        subgraph "Application Layer"
+            A1[Controllers<br/>REST endpoints]
+            A2[Handlers<br/>Request orchestration]
+            A3[DTOs<br/>Data transfer objects]
+            A4[Mappers<br/>DTO ↔ Domain]
+        end
+        
+        subgraph "Domain Layer"
+            D1[Use Cases<br/>Business operations]
+            D2[Commands<br/>Input contracts]
+            D3[Models<br/>Domain entities]
+            D4[Ports<br/>Interfaces]
+            D5[Exceptions<br/>Domain errors]
+        end
+        
+        subgraph "Infrastructure Layer"
+            I1[Repository Adapters<br/>Data persistence]
+            I2[External Adapters<br/>Third-party services]
+            I3[Validators<br/>Technical validation]
+        end
+    end
+    
+    A1 --> A2
+    A2 --> D1
+    D1 --> D2
+    D1 --> D3
+    D1 --> D4
+    I1 -.implements.-> D4
+    I2 -.implements.-> D4
+    
+    classDef app fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px
+    classDef domain fill:#c8e6c9,stroke:#388e3c,stroke-width:2px
+    classDef infra fill:#ffccbc,stroke:#e64a19,stroke-width:2px
+    
+    class A1,A2,A3,A4 app
+    class D1,D2,D3,D4,D5 domain
+    class I1,I2,I3 infra
+```
+
+### Project Module Organization
 
 ```
 src/main/java/com/vinculo/
 ├── module/
 │   ├── auth/                    # Authentication module
 │   │   ├── application/         # Controllers, DTOs, handlers
-│   │   ├── domain/              # Use cases, commands, ports
-│   │   └── infrastructure/      # JWT, Spring Security adapters
+│   │   │   ├── controller/      # AuthController
+│   │   │   ├── dto/             # LoginRequest, RegisterPersonRequest
+│   │   │   └── handler/         # LoginHandler, RegisterPersonHandler
+│   │   ├── domain/              # Business logic (Use cases, commands, ports)
+│   │   │   ├── command/         # LoginCommand, RegisterPersonCommand
+│   │   │   ├── port/            # AuthenticatorPort, TokenProvider
+│   │   │   └── use_case/        # LoginUseCase, RegisterPersonUseCase
+│   │   └── infrastructure/      # Technical implementations
+│   │       └── security/        # JWT, Spring Security adapters
+│   │
 │   ├── person/                  # Person management module
-│   │   ├── controller/          # REST controllers
-│   │   ├── domain/              # Business logic
-│   │   └── infrastructure/      # Database repositories
+│   │   ├── controller/          # REST controllers & handlers
+│   │   │   ├── controller/      # PersonController
+│   │   │   ├── dto/             # Request/Response DTOs
+│   │   │   ├── handler/         # CRUD handlers
+│   │   │   └── mapper/          # DTO mappers
+│   │   ├── domain/              # Person business logic
+│   │   │   ├── command/         # Person commands
+│   │   │   ├── exception/       # Domain exceptions
+│   │   │   ├── model/           # Person entity, RoleUser enum
+│   │   │   ├── port/            # Repository, Encoder, Validator ports
+│   │   │   └── use_case/        # CRUD use cases
+│   │   └── infrastructure/      # Technical implementations
+│   │       ├── encoder/         # BCrypt password encoder
+│   │       ├── persistence/     # Neo4j repository
+│   │       └── validator/       # Phone number validator
+│   │
 │   ├── connection/              # Connection management module
 │   │   ├── application/         # API layer
 │   │   ├── domain/              # Connection business logic
 │   │   └── infrastructure/      # Neo4j persistence
+│   │
 │   └── request_connection/      # Connection request module
 │       ├── application/         # Request handling
 │       ├── domain/              # Request workflow, strategies
 │       └── infrastructure/      # Request persistence
-└── share/                       # Shared utilities
+│
+└── share/                       # Shared cross-cutting concerns
     ├── exception/               # Global exception handling
-    └── security/                # Security configuration
+    ├── security/                # Security configuration
+    └── service/                 # Authentication service
+```
+
+### Request Flow: Controller → Handler → Use Case → Command
+
+Every API request follows a consistent flow through the layers, transforming DTOs into Commands:
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Controller
+    participant Handler
+    participant UseCase
+    participant Command
+    participant Port
+    participant Adapter
+    participant Database
+    
+    Client->>Controller: POST /v1/auth/register<br/>{JSON DTO}
+    activate Controller
+    Note over Controller: @RestController<br/>Validates DTO with<br/>@Validated
+    
+    Controller->>Handler: handle(RegisterPersonRequest)
+    activate Handler
+    Note over Handler: @Component<br/>Transaction boundary
+    
+    Handler->>Command: new RegisterPersonCommand()
+    Note over Command: Immutable record<br/>Domain language
+    
+    Handler->>UseCase: execute(Command)
+    activate UseCase
+    Note over UseCase: @Component<br/>Pure business logic<br/>No framework deps
+    
+    UseCase->>Port: personRepository.existsByEmail()
+    Note over Port: Interface (no implementation)
+    
+    Port->>Adapter: Implementation
+    activate Adapter
+    Adapter->>Database: Cypher Query
+    Database-->>Adapter: Result
+    Adapter-->>Port: boolean
+    deactivate Adapter
+    
+    Port-->>UseCase: boolean
+    
+    UseCase->>UseCase: Validate business rules
+    
+    UseCase->>Port: passwordEncoder.encode()
+    Port->>Adapter: BCrypt implementation
+    Adapter-->>Port: hash
+    Port-->>UseCase: hash
+    
+    UseCase->>Port: personRepository.save(Person)
+    Port->>Adapter: PersonRepositoryAdapter
+    Adapter->>Database: CREATE (p:Person {...})
+    Database-->>Adapter: Node created
+    Adapter-->>Port: void
+    Port-->>UseCase: void
+    
+    UseCase-->>Handler: void
+    deactivate UseCase
+    Handler-->>Controller: void
+    deactivate Handler
+    
+    Controller-->>Client: 201 CREATED
+    deactivate Controller
+```
+
+### Layer Responsibilities
+
+```mermaid
+graph TB
+    subgraph "Application Layer"
+        direction TB
+        A1["<b>Controllers</b><br/>• REST endpoint mapping<br/>• HTTP concerns<br/>• DTO validation<br/>• Response building"]
+        A2["<b>Handlers</b><br/>• Transaction management<br/>• DTO → Command conversion<br/>• Use case orchestration<br/>• Response mapping"]
+        A3["<b>DTOs & Mappers</b><br/>• External data contracts<br/>• JSON serialization<br/>• Validation annotations<br/>• Domain translation"]
+    end
+    
+    subgraph "Domain Layer - Core"
+        direction TB
+        D1["<b>Use Cases</b><br/>• Business logic<br/>• Validation rules<br/>• Domain operations<br/>• Framework-independent"]
+        D2["<b>Commands</b><br/>• Input contracts<br/>• Immutable records<br/>• Domain language<br/>• Type safety"]
+        D3["<b>Models</b><br/>• Domain entities<br/>• Business rules<br/>• State management<br/>• Rich behavior"]
+        D4["<b>Ports</b><br/>• Interface contracts<br/>• Dependency inversion<br/>• Technology agnostic<br/>• Testability"]
+    end
+    
+    subgraph "Infrastructure Layer"
+        direction TB
+        I1["<b>Repository Adapters</b><br/>• Neo4j queries<br/>• Data mapping<br/>• Connection management<br/>• Port implementation"]
+        I2["<b>Security Adapters</b><br/>• JWT generation<br/>• Password encoding<br/>• Authentication<br/>• Port implementation"]
+        I3["<b>External Adapters</b><br/>• Third-party APIs<br/>• File system<br/>• Message queues<br/>• Port implementation"]
+    end
+    
+    A1 --> A2
+    A2 --> D1
+    D1 --> D2
+    D1 --> D3
+    D1 --> D4
+    I1 -.-> D4
+    I2 -.-> D4
+    I3 -.-> D4
+    
+    classDef appStyle fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef domainStyle fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
+    classDef infraStyle fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    
+    class A1,A2,A3 appStyle
+    class D1,D2,D3,D4 domainStyle
+    class I1,I2,I3 infraStyle
+```
+
+### Dependency Flow
+
+The architecture enforces strict dependency rules - dependencies always point inward toward the domain:
+
+```mermaid
+graph TD
+    EXT[External Systems<br/>Database, Security, APIs]
+    INFRA[Infrastructure Layer<br/>Adapters & Implementations]
+    APP[Application Layer<br/>Controllers & Handlers]
+    DOMAIN[Domain Layer<br/>Use Cases & Business Logic]
+    
+    EXT -.->|uses| INFRA
+    INFRA -.->|implements| DOMAIN
+    APP -->|depends on| DOMAIN
+    DOMAIN -->|defines| DOMAIN
+    
+    style DOMAIN fill:#c8e6c9,stroke:#388e3c,stroke-width:4px
+    style APP fill:#e1bee7,stroke:#7b1fa2,stroke-width:3px
+    style INFRA fill:#ffccbc,stroke:#e64a19,stroke-width:2px
+    style EXT fill:#e3f2fd,stroke:#1976d2,stroke-width:1px
+    
+    Note1[Domain has ZERO dependencies<br/>on infrastructure or frameworks]
+    Note2[Infrastructure depends on Domain<br/>through Ports implementation]
+    Note3[Application coordinates<br/>but doesn't contain business logic]
 ```
 
 ### Key Design Patterns
 
 - **Hexagonal Architecture**: Clean separation between business logic and infrastructure
-- **Strategy Pattern**: For handling different connection request statuses
-- **Repository Pattern**: Abstraction over data access
-- **DTO Pattern**: Data transfer between layers
-- **Command Pattern**: Encapsulating use case inputs
+- **Domain-Driven Design**: Modular organization by business capability
+- **Ports and Adapters**: Dependency inversion for testability and flexibility
+- **Command Pattern**: Encapsulating use case inputs with immutable records
+- **Strategy Pattern**: Handling different connection request statuses polymorphically
+- **Repository Pattern**: Abstraction over data access layer
+- **DTO Pattern**: Data transfer between external and domain layers
+- **Handler Pattern**: Transaction and orchestration management
 
 ## 📋 Prerequisites
 
@@ -355,6 +622,293 @@ Relationships:
 | ACQUAINTANCE | 5 | 5 | Acquaintance |
 
 Lower weight indicates closer relationship.
+
+### Graph Database Visual Model
+
+```mermaid
+graph TB
+    subgraph "Person Nodes"
+        P1["Person: Alice<br/>id: 1<br/>email: alice@example.com<br/>role: NORMAL"]
+        P2["Person: Bob<br/>id: 2<br/>email: bob@example.com<br/>role: NORMAL"]
+        P3["Person: Charlie<br/>id: 3<br/>email: charlie@example.com<br/>role: ADMIN"]
+    end
+    
+    subgraph "Request Nodes"
+        R1["RequestConnection<br/>id: 10<br/>type: FRIEND<br/>status: PENDING<br/>createdAt: 2024-01-15"]
+    end
+    
+    P1 -->|CONNECTED_WITH<br/>type: FRIEND<br/>weight: 2| P2
+    P2 -->|CONNECTED_WITH<br/>type: FRIEND<br/>weight: 2| P1
+    P1 -->|CONNECTED_WITH<br/>type: COLLEAGUE<br/>weight: 4| P3
+    P3 -->|CONNECTED_WITH<br/>type: COLLEAGUE<br/>weight: 4| P1
+    
+    P2 -->|FROM| R1
+    R1 -->|TO| P3
+    
+    classDef person fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef request fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    
+    class P1,P2,P3 person
+    class R1 request
+```
+
+## 🔄 Application Workflows
+
+### Authentication Flow
+
+Complete authentication workflow from registration to JWT token generation:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Controller as AuthController
+    participant Handler as RegisterPersonHandler
+    participant UseCase as RegisterPersonUseCase
+    participant Encoder as PasswordEncoder
+    participant Validator as PhoneNumberValidator
+    participant Repo as PersonRepository
+    participant DB as Neo4j
+    
+    User->>Controller: POST /v1/auth/register<br/>{name, email, phone, password}
+    
+    activate Controller
+    Note over Controller: Validate DTO<br/>@Validated
+    
+    Controller->>Handler: handle(RegisterPersonRequest)
+    activate Handler
+    Note over Handler: Start transaction
+    
+    Handler->>UseCase: execute(RegisterPersonCommand)
+    activate UseCase
+    
+    UseCase->>Repo: existsByEmail(email)
+    Repo->>DB: MATCH (p:Person {email: $email})
+    DB-->>Repo: boolean
+    Repo-->>UseCase: false
+    
+    UseCase->>Validator: isValid(phoneNumber)
+    Validator-->>UseCase: true
+    
+    UseCase->>Encoder: encode(password)
+    Note over Encoder: BCrypt hashing
+    Encoder-->>UseCase: hashedPassword
+    
+    UseCase->>UseCase: Person.builder()<br/>.build()
+    
+    UseCase->>Repo: save(Person)
+    Repo->>DB: CREATE (p:Person {...})
+    DB-->>Repo: Node created
+    Repo-->>UseCase: void
+    
+    UseCase-->>Handler: void
+    deactivate UseCase
+    
+    Handler-->>Controller: void
+    Note over Handler: Commit transaction
+    deactivate Handler
+    
+    Controller-->>User: 201 CREATED
+    deactivate Controller
+    
+    Note over User: User can now login
+    
+    User->>Controller: POST /v1/auth/login<br/>{email, password}
+    activate Controller
+    
+    Controller->>Handler: LoginHandler.handle(LoginRequest)
+    activate Handler
+    
+    Handler->>UseCase: LoginUseCase.execute(LoginCommand)
+    activate UseCase
+    
+    UseCase->>Repo: findByEmail(email)
+    Repo->>DB: MATCH (p:Person {email: $email})
+    DB-->>Repo: Person node
+    Repo-->>UseCase: Optional<Person>
+    
+    UseCase->>UseCase: Authenticate via<br/>Spring Security
+    
+    UseCase->>UseCase: Generate JWT token<br/>with claims
+    
+    UseCase-->>Handler: JWT token
+    deactivate UseCase
+    
+    Handler-->>Controller: token string
+    deactivate Handler
+    
+    Controller-->>User: 200 OK<br/>{token: "eyJ..."}
+    deactivate Controller
+```
+
+### Connection Request Workflow
+
+State machine for connection request lifecycle with strategy pattern implementation:
+
+```mermaid
+stateDiagram-v2
+    [*] --> RequestCreated: User A sends request to User B
+    
+    RequestCreated --> PENDING: Request stored in Neo4j<br/>Person -[FROM]-> Request -[TO]-> Person
+    
+    PENDING --> ACCEPTED: User B accepts<br/>UpdateStatusRequestConnectionUseCase
+    PENDING --> REJECTED: User B rejects<br/>UpdateStatusRequestConnectionUseCase
+    
+    ACCEPTED --> BidirectionalConnection: AcceptConnectionStrategy<br/>executes
+    REJECTED --> RequestClosed: RejectConnectionStrategy<br/>executes
+    
+    BidirectionalConnection --> Connected: CREATE bidirectional<br/>CONNECTED_WITH relationships
+    
+    Connected --> [*]: Both users connected
+    RequestClosed --> [*]: Request rejected
+    
+    note right of PENDING
+        Status: PENDING
+        Both users can query
+        request status
+    end note
+    
+    note right of ACCEPTED
+        Status: ACCEPTED
+        Triggers connection creation
+    end note
+    
+    note right of REJECTED
+        Status: REJECTED
+        No connection created
+    end note
+    
+    note right of Connected
+        Person A -[CONNECTED_WITH]-> Person B
+        Person B -[CONNECTED_WITH]-> Person A
+        Bidirectional relationship
+    end note
+```
+
+### Complete Request Cycle: Send Connection Request
+
+```mermaid
+sequenceDiagram
+    participant User as User A
+    participant Ctrl as RequestConnectionController
+    participant Handler as SendRequestConnectionHandler
+    participant UseCase as SendRequestConnectionUseCase
+    participant Repo as RequestConnectionRepository
+    participant PersonRepo as PersonRepository
+    participant DB as Neo4j
+    
+    User->>Ctrl: POST /v1/request-connections/{personTargetId}<br/>Authorization: Bearer token
+    
+    activate Ctrl
+    Note over Ctrl: Extract authenticated<br/>user from JWT
+    
+    Ctrl->>Handler: handle(personTargetId, requesterId, dto)
+    activate Handler
+    
+    Handler->>UseCase: execute(SendRequestConnectionCommand)
+    activate UseCase
+    
+    UseCase->>PersonRepo: findById(requesterId)
+    PersonRepo->>DB: MATCH (p:Person) WHERE id(p) = $id
+    DB-->>PersonRepo: Person node
+    PersonRepo-->>UseCase: Requester
+    
+    UseCase->>PersonRepo: findById(targetId)
+    PersonRepo->>DB: MATCH (p:Person) WHERE id(p) = $id
+    DB-->>PersonRepo: Person node
+    PersonRepo-->>UseCase: Target
+    
+    UseCase->>UseCase: Validate:<br/>• Not same person<br/>• Not already connected<br/>• No pending request
+    
+    UseCase->>UseCase: Create RequestConnection<br/>status: PENDING<br/>type: from command
+    
+    UseCase->>Repo: save(RequestConnection)
+    Repo->>DB: CREATE (req:RequestConnection {...})<br/>CREATE (requester)-[:FROM]->(req)<br/>CREATE (req)-[:TO]->(target)
+    DB-->>Repo: Request node + relationships
+    Repo-->>UseCase: RequestConnection
+    
+    UseCase-->>Handler: RequestConnection
+    deactivate UseCase
+    
+    Handler-->>Ctrl: Response DTO
+    deactivate Handler
+    
+    Ctrl-->>User: 201 CREATED<br/>{id, type, status, createdAt}
+    deactivate Ctrl
+```
+
+### Accept Connection Request with Strategy Pattern
+
+```mermaid
+sequenceDiagram
+    participant User as User B (Target)
+    participant Ctrl as RequestConnectionController
+    participant Handler as UpdateStatusHandler
+    participant UseCase as UpdateStatusUseCase
+    participant Strategy as ConnectionStrategyManager
+    participant AcceptStrategy as AcceptConnectionStrategy
+    participant ConnRepo as ConnectionRepository
+    participant ReqRepo as RequestConnectionRepository
+    participant DB as Neo4j
+    
+    User->>Ctrl: PUT /v1/request-connections/{requestId}<br/>{status: "ACCEPTED"}
+    
+    activate Ctrl
+    
+    Ctrl->>Handler: handle(requestId, status, authenticatedUserId)
+    activate Handler
+    
+    Handler->>UseCase: execute(UpdateStatusCommand)
+    activate UseCase
+    
+    UseCase->>ReqRepo: findById(requestId)
+    ReqRepo->>DB: MATCH (req:RequestConnection) WHERE id(req) = $id
+    DB-->>ReqRepo: RequestConnection node
+    ReqRepo-->>UseCase: RequestConnection
+    
+    UseCase->>UseCase: Validate:<br/>• User is target<br/>• Status is PENDING
+    
+    UseCase->>UseCase: Update status to ACCEPTED
+    
+    UseCase->>Strategy: execute(request, target, status)
+    activate Strategy
+    
+    Strategy->>Strategy: Select strategy<br/>based on status
+    
+    Strategy->>AcceptStrategy: execute(request, target)
+    activate AcceptStrategy
+    Note over AcceptStrategy: Strategy Pattern:<br/>Polymorphic behavior<br/>based on status
+    
+    AcceptStrategy->>AcceptStrategy: Create bidirectional<br/>Connection objects
+    
+    AcceptStrategy->>ConnRepo: save(Connection A->B)
+    ConnRepo->>DB: CREATE (a)-[:CONNECTED_WITH {type, weight}]->(b)
+    DB-->>ConnRepo: Relationship created
+    
+    AcceptStrategy->>ConnRepo: save(Connection B->A)
+    ConnRepo->>DB: CREATE (b)-[:CONNECTED_WITH {type, weight}]->(a)
+    DB-->>ConnRepo: Relationship created
+    
+    AcceptStrategy-->>Strategy: void
+    deactivate AcceptStrategy
+    
+    Strategy-->>UseCase: void
+    deactivate Strategy
+    
+    UseCase->>ReqRepo: save(updatedRequest)
+    ReqRepo->>DB: MERGE request with ACCEPTED status
+    DB-->>ReqRepo: Updated
+    
+    UseCase-->>Handler: void
+    deactivate UseCase
+    
+    Handler-->>Ctrl: void
+    deactivate Handler
+    
+    Ctrl-->>User: 200 OK
+    deactivate Ctrl
+    
+    Note over User,DB: Both users now have<br/>bidirectional CONNECTED_WITH<br/>relationships in the graph
+```
 
 ## 🔒 Security
 
