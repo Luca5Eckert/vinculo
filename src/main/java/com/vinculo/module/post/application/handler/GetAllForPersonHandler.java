@@ -1,6 +1,5 @@
 package com.vinculo.module.post.application.handler;
 
-import com.vinculo.module.person.controller.mapper.PersonMapper;
 import com.vinculo.module.post.application.dto.PostResponse;
 import com.vinculo.module.post.application.mapper.PostMapper;
 import com.vinculo.module.post.domain.command.GetAllForPersonCommand;
