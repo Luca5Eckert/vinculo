@@ -22,7 +22,7 @@ public class CreatePostUseCase {
     }
 
     public Post execute(CreatePostCommand command){
-        Person person = personRepository.findById(command.userId())
+        Person person = personRepository.findById(command.personId())
                 .orElseThrow(PersonNotExistException::new);
 
         Post post = Post.builder()
