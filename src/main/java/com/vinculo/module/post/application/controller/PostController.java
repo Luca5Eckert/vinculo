@@ -4,6 +4,7 @@ import com.vinculo.module.post.application.dto.CreatePostRequest;
 import com.vinculo.module.post.application.dto.PostResponse;
 import com.vinculo.module.post.application.handler.CreatePostHandler;
 import com.vinculo.module.post.application.handler.DeletePostHandler;
+import com.vinculo.module.post.application.handler.GetAllByAuthorHandler;
 import com.vinculo.module.post.application.handler.GetAllForPersonHandler;
 import com.vinculo.share.service.AuthenticationService;
 import jakarta.validation.Valid;
@@ -22,12 +23,14 @@ public class PostController {
     private final CreatePostHandler createPostHandler;
     private final DeletePostHandler deletePostHandler;
     private final GetAllForPersonHandler getAllForPersonHandler;
+    private final GetAllByAuthorHandler getAllByAuthorHandler;
 
-    public PostController(AuthenticationService authenticationService, CreatePostHandler createPostHandler, DeletePostHandler deletePostHandler, GetAllForPersonHandler getAllForPersonHandler) {
+    public PostController(AuthenticationService authenticationService, CreatePostHandler createPostHandler, DeletePostHandler deletePostHandler, GetAllForPersonHandler getAllForPersonHandler, GetAllByAuthorHandler getAllByAuthorHandler) {
         this.authenticationService = authenticationService;
         this.createPostHandler = createPostHandler;
         this.deletePostHandler = deletePostHandler;
         this.getAllForPersonHandler = getAllForPersonHandler;
+        this.getAllByAuthorHandler = getAllByAuthorHandler;
     }
 
     @PostMapping
@@ -69,13 +72,16 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/persons/{authorId}")
+    @GetMapping("/{authorId}")
     public ResponseEntity<List<PostResponse>> getByPerson(
-            @PathVariable(name = "userId") long personId
+            @PathVariable(name = "authorId") long authorId,
+            @RequestParam(defaultValue = "0") int skip,
+            @RequestParam(defaultValue = "10") int limit
     ) {
-        return null;
-    }
+        var response = getAllByAuthorHandler.handle(authorId, limit, skip);
 
+        return ResponseEntity.ok(response);
+    }
 
 
 }
