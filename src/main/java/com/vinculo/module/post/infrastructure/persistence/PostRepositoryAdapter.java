@@ -4,6 +4,7 @@ import com.vinculo.module.post.domain.model.Post;
 import com.vinculo.module.post.domain.ports.PostRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -28,5 +29,14 @@ public class PostRepositoryAdapter implements PostRepository {
     @Override
     public void deleteById(long id) {
         postRepositoryNeo4j.deleteById(id);
+    }
+
+    @Override
+    public List<Post> findNetworkFeed(long personId, int limit, int skip) {
+        return postRepositoryNeo4j.findNetworkFeed(
+                personId,
+                limit,
+                skip
+        );
     }
 }
