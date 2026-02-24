@@ -30,4 +30,7 @@ public class Post {
     private Person author;
 
 
+    public boolean canDelete(long personId) {
+        return this.author.getId() == personId;
+    }
 }
