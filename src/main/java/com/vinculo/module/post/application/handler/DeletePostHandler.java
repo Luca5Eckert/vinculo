@@ -3,6 +3,7 @@ package com.vinculo.module.post.application.handler;
 import com.vinculo.module.post.domain.command.DeletePostCommand;
 import com.vinculo.module.post.domain.use_case.DeletePostUseCase;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class DeletePostHandler {
@@ -13,6 +14,7 @@ public class DeletePostHandler {
         this.deletePostUseCase = deletePostUseCase;
     }
 
+    @Transactional
     public void handle(long postId, long personId){
         var command = DeletePostCommand.of(postId, personId);
 

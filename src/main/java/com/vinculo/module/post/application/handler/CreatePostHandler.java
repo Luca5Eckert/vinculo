@@ -5,7 +5,10 @@ import com.vinculo.module.post.application.dto.PostResponse;
 import com.vinculo.module.post.application.mapper.PostMapper;
 import com.vinculo.module.post.domain.command.CreatePostCommand;
 import com.vinculo.module.post.domain.use_case.CreatePostUseCase;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+@Component
 public class CreatePostHandler {
 
     private final CreatePostUseCase createPostUseCase;
@@ -17,6 +20,7 @@ public class CreatePostHandler {
         this.mapper = mapper;
     }
 
+    @Transactional
     public PostResponse handle(CreatePostRequest request, long personId){
         var command = CreatePostCommand.of(request.content(), personId);
 
