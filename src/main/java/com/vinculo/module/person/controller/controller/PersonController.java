@@ -40,9 +40,9 @@ public class PersonController {
                 .build();
     }
 
-    @DeleteMapping("/{personId}")
+    @DeleteMapping("/{authorId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable(value = "personId") Long personId){
+    public ResponseEntity<Void> delete(@PathVariable(value = "authorId") Long personId){
         deletePersonHandler.handle(personId);
 
         return ResponseEntity
@@ -50,14 +50,14 @@ public class PersonController {
                 .build();
     }
 
-    @GetMapping("/{personId}")
+    @GetMapping("/{authorId}")
     public ResponseEntity<PersonResponse> getById(@PathVariable Long personId) {
         PersonResponse response = getPersonHandler.handle(personId);
 
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{personId}")
+    @PutMapping("/{authorId}")
     public ResponseEntity<Void> update(
             @PathVariable Long personId,
             @Validated @RequestBody UpdatePersonRequest request

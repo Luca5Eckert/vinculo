@@ -69,7 +69,7 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/persons/{personId}")
+    @GetMapping("/persons/{authorId}")
     public ResponseEntity<List<PostResponse>> getByPerson(
             @PathVariable(name = "userId") long personId
     ) {

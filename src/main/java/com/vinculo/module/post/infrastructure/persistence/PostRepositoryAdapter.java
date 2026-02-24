@@ -2,6 +2,8 @@ package com.vinculo.module.post.infrastructure.persistence;
 
 import com.vinculo.module.post.domain.model.Post;
 import com.vinculo.module.post.domain.ports.PostRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -38,5 +40,12 @@ public class PostRepositoryAdapter implements PostRepository {
                 limit,
                 skip
         );
+    }
+
+    @Override
+    public Page<Post> findAllByAuthorId(long authorId, int limit, int skip) {
+        PageRequest pageRequest = PageRequest.of(skip, limit);
+
+        return postRepositoryNeo4j.findAllByAuthorId(authorId, pageRequest);
     }
 }

@@ -1,6 +1,8 @@
 package com.vinculo.module.post.infrastructure.persistence;
 
 import com.vinculo.module.post.domain.model.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +14,7 @@ import java.util.List;
 public interface PostRepositoryNeo4j extends Neo4jRepository<Post, Long> {
 
     @Query("""
-        MATCH (me:Person) WHERE id(me) = $personId
+        MATCH (me:Person) WHERE id(me) = $authorId
         
         MATCH (me)-[connections:CONNECTED_WITH*1..2]-(author:Person)-[:POSTED]->(post:Post)
         WHERE author <> me
@@ -26,9 +28,10 @@ public interface PostRepositoryNeo4j extends Neo4jRepository<Post, Long> {
         SKIP $skip LIMIT $limit
         """)
     List<Post> findNetworkFeed(
-            @Param("personId") Long personId,
+            @Param("authorId") Long personId,
             @Param("limit") int limit,
             @Param("skip") int skip
     );
 
+    Page<Post> findAllByAuthorId(long authorId, PageRequest pageRequest);
 }
