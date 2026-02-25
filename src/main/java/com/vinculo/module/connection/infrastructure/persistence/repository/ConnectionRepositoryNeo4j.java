@@ -10,13 +10,17 @@ import java.util.List;
 @Repository
 public interface ConnectionRepositoryNeo4j extends Neo4jRepository<Connection, Long> {
 
-    @Query("MATCH (p1:Person)-[r:CONNECTED_WITH]-(p2:Person) " +
-            "WHERE id(p1) = $authorId " +
-            "RETURN r, collect(p1), collect(p2)")
-    List<Connection> findAllByPersonId(long personId);
+    @Query("""
+            MATCH (p1:person)-[r:CONNECTED_WITH]->(p2:person)
+            WHERE id(p1) = $personId
+            RETURN r, p1, p2
+            """)
+    List<Connection> findAllByPersonId(Long personId);
 
-    @Query("MATCH (p1:Person)-[:CONNECTED_WITH]-(p2:Person) " +
-            "WHERE id(p1) = $requesterPersonId AND id(p2) = $targetPersonId " +
-            "RETURN count(p1) > 0")
-    boolean existsBetween(long requesterPersonId, long targetPersonId);
+    @Query("""
+            MATCH (p1:person)-[:CONNECTED_WITH]-(p2:person)
+            WHERE id(p1) = $requesterPersonId AND id(p2) = $targetPersonId
+            RETURN COUNT(p1) > 0
+            """)
+    boolean existsBetween(Long requesterPersonId, Long targetPersonId);
 }

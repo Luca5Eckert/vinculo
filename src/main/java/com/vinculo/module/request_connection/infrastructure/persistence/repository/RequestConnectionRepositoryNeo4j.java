@@ -15,9 +15,12 @@ public interface RequestConnectionRepositoryNeo4j extends Neo4jRepository<Reques
 
     List<RequestConnection> findAllByTargetId(Long targetId);
 
-    @Query("MATCH (p1:Person)-[f:FROM]->(r:RequestConnection)-[t:TO]->(p2:Person) " +
-            "WHERE (id(p1) = $requesterId AND id(p2) = $targetId) " +
-            "OR (id(p1) = $targetId AND id(p2) = $requesterId) " +
-            "RETURN r, f, t, p1, p2")
-    Optional<RequestConnection> findByAnyRequesterOrTarget(long requesterId, long targetId);
+    @Query("""
+            MATCH (p1:person)-[f:FROM]->(r:RequestConnection)-[t:TO]->(p2:person)
+            WHERE (id(p1) = $requesterId AND id(p2) = $targetId)
+               OR (id(p1) = $targetId AND id(p2) = $requesterId)
+            RETURN r, f, t, p1, p2 
+            LIMIT 1
+            """)
+    Optional<RequestConnection> findByAnyRequesterOrTarget(Long requesterId, Long targetId);
 }

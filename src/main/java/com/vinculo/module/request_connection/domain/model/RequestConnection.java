@@ -11,26 +11,21 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 import java.time.LocalDateTime;
 
 @Node("RequestConnection")
-@Getter
-@Setter
+@Getter @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class RequestConnection {
 
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue
     private Long id;
 
-    private LocalDateTime createdAt;
-
+    private LocalDateTime createdAt = LocalDateTime.now();
     private TypeConnection type;
+    private StatusRequestConnection status = StatusRequestConnection.PENDING;
 
-    @Relationship(type = "FROM", direction = Relationship.Direction.INCOMING)
+    @Relationship(type = "REQUESTED_BY", direction = Relationship.Direction.OUTGOING)
     private Person requester;
 
-    @Relationship(type = "TO", direction = Relationship.Direction.OUTGOING)
+    @Relationship(type = "SENT_TO", direction = Relationship.Direction.OUTGOING)
     private Person target;
 
-    private StatusRequestConnection status;
 }

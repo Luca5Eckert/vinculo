@@ -3,6 +3,7 @@ package com.vinculo.share.exception;
 import com.vinculo.module.connection.domain.exception.ConnectionException;
 import com.vinculo.module.person.domain.exception.PersonException;
 import com.vinculo.module.person.domain.exception.email.EmailAlreadyInUseException;
+import com.vinculo.module.post.domain.exception.PostDomainException;
 import com.vinculo.module.request_connection.domain.exception.RequestConnectionException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -28,7 +30,7 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
 
-    @ExceptionHandler({PersonException.class, ConnectionException.class, RequestConnectionException.class})
+    @ExceptionHandler({PersonException.class, ConnectionException.class, RequestConnectionException.class, PostDomainException.class})
     public ResponseEntity<ApiErrorResponse> handleDomainExceptions(RuntimeException ex, HttpServletRequest request) {
         log.warn("Domain exception at {}: {}", request.getRequestURI(), ex.getMessage());
 
@@ -37,6 +39,13 @@ public class GlobalExceptionHandler {
                 : HttpStatus.BAD_REQUEST;
 
         return buildResponse(status, ex.getMessage(), request, null);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthenticationExceptions(BadCredentialsException ex, HttpServletRequest request) {
+        log.warn("Authentication failed at {}: {}", request.getRequestURI(), ex.getMessage());
+
+        return buildResponse(HttpStatus.UNAUTHORIZED, "Invalid credentials", request, null);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

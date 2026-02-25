@@ -27,7 +27,7 @@ public class UpdatePersonUseCase {
             throw new PhoneNumberIsNotValidException();
         }
 
-        person.update(
+        person.updateProfile(
                 command.name(),
                 command.phoneNumber()
         );

@@ -11,24 +11,21 @@ import java.util.Optional;
 public interface PersonRepositoryNeo4j extends Neo4jRepository<Person, Long> {
 
     boolean existsByEmail(String email);
-
     boolean existsByPhoneNumber(String number);
+    Optional<Person> findByEmail(String email);
 
     @Query("""
             MATCH (p1:person), (p2:person)
             WHERE id(p1) = $personId AND id(p2) = $connectedPersonId
-            RETURN EXISTS((p1)-[:CONNECTED_WITH]->(p2))
+            RETURN COUNT { (p1)-[:CONNECTED_WITH]-(p2) } > 0
             """)
     boolean existsConnectionBetween(Long personId, Long connectedPersonId);
 
-    Optional<Person> findByEmail(String email);
-
     @Override
     @Query("""
-        MATCH (p:Person) WHERE id(p) = $personId
-        OPTIONAL MATCH (p)-[:FROM|TO]-(r:RequestConnection)
-        DETACH DELETE r, p
+        MATCH (p:person) WHERE id(p) = $id
+        OPTIONAL MATCH (p)-[r]-()
+        DETACH DELETE p, r
     """)
     void deleteById(Long id);
-
 }
