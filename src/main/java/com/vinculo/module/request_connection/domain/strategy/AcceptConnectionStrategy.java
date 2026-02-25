@@ -5,15 +5,18 @@ import com.vinculo.module.person.domain.model.Person;
 import com.vinculo.module.person.domain.port.PersonRepository;
 import com.vinculo.module.request_connection.domain.model.RequestConnection;
 import com.vinculo.module.request_connection.domain.model.StatusRequestConnection;
+import com.vinculo.module.request_connection.domain.port.RequestConnectionRepository;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AcceptConnectionStrategy implements RequestStatusStrategy {
 
     private final PersonRepository personRepository;
+    private final RequestConnectionRepository requestConnectionRepository;
 
-    public AcceptConnectionStrategy(PersonRepository personRepository) {
+    public AcceptConnectionStrategy(PersonRepository personRepository, RequestConnectionRepository requestConnectionRepository) {
         this.personRepository = personRepository;
+        this.requestConnectionRepository = requestConnectionRepository;
     }
 
     @Override
@@ -31,6 +34,8 @@ public class AcceptConnectionStrategy implements RequestStatusStrategy {
 
         personRepository.save(requester);
         personRepository.save(target);
+
+        requestConnectionRepository.delete(request);
     }
 
 }
