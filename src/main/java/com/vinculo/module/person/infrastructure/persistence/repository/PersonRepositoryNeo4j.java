@@ -35,7 +35,7 @@ public interface PersonRepositoryNeo4j extends Neo4jRepository<Person, String> {
             """)
     List<Connection> findAllConnectionsByPersonId(@Param("personId") String personId);
 
-    @Query("MATCH (a:Person {id: $id1})-[:CONNECTED_WITH]->(b:Person {id: $id2}) RETURN COUNT(a) > 0")
+    @Query("MATCH (a:Person {id: $id1})-[:CONNECTED_WITH]-(b:Person {id: $id2}) RETURN COUNT(a) > 0")
     boolean existsConnectionBetween(
             @Param("id1") String personId,
             @Param("id2") String targetPersonId
