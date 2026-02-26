@@ -23,9 +23,12 @@ public class Connection {
 
     private TypeConnection type;
 
+    private int weight;
+
     public Connection(Person person, TypeConnection type) {
         this.person = person;
         this.type = type;
+        this.weight = type.getWeight();
     }
 
 }
