@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class Post {
 
     @Id
-    @GeneratedValue(generatorClass = GeneratedValue.UUIDGenerator.class)
+    @GeneratedValue()
     private String id;
 
     private String content;
