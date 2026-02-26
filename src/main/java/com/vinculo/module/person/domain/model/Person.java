@@ -18,6 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class Person {
+
     @Id @GeneratedValue
     private Long id;
     private String name;
@@ -32,8 +33,9 @@ public class Person {
     @Builder.Default
     private RoleUser role = RoleUser.NORMAL;
 
+    @Builder.Default
     @Relationship(type = "CONNECTED_WITH", direction = Relationship.Direction.OUTGOING)
-    private final Set<Connection> connections = new HashSet<>();
+    private Set<Connection> connections = new HashSet<>();
 
     public void updateProfile(String name, String phoneNumber) {
         if (name != null && !name.isBlank()) this.name = name;
