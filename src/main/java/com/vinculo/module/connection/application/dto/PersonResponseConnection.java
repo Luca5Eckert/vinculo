@@ -4,6 +4,6 @@ public record PersonResponseConnection(
         String id,
         String name,
         String email,
-        String phoreNumber
+        String phoneNumber
 ) {
 }
