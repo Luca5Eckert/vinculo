@@ -20,8 +20,13 @@ public class GetAllByAuthorHandler {
         this.postMapper = postMapper;
     }
 
-    public List<PostResponse> handle(long authorId, int limit, int skip){
-        var command = GetAllByAuthorCommand.of(authorId, limit, skip);
+    public List<PostResponse> handle(
+            long personAuthenticatedId,
+            long authorId,
+            int limit,
+            int skip
+    ){
+        var command = GetAllByAuthorCommand.of(personAuthenticatedId, authorId, limit, skip);
 
         var posts = getAllByAuthorUseCase.execute(command);
 

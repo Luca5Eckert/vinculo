@@ -78,7 +78,13 @@ public class PostController {
             @RequestParam(defaultValue = "0") int skip,
             @RequestParam(defaultValue = "10") int limit
     ) {
-        var response = getAllByAuthorHandler.handle(authorId, limit, skip);
+        var personAuthenticatedId = authenticationService.getAuthenticatedPersonId();
+
+        var response = getAllByAuthorHandler.handle(
+                personAuthenticatedId,
+                authorId,
+                limit,
+                skip);
 
         return ResponseEntity.ok(response);
     }

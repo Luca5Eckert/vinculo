@@ -13,7 +13,7 @@ public interface PostRepository {
 
     void deleteById(long id);
 
-    List<Post> findNetworkFeed(long l, int limit, int skip);
+    List<Post> findNetworkFeed(long personId, int limit, int skip);
 
     Page<Post> findAllByAuthorId(long authorId, int limit, int skip);
 }

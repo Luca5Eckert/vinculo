@@ -31,5 +31,8 @@ public interface PostRepositoryNeo4j extends Neo4jRepository<Post, Long> {
             @Param("skip") int skip
     );
 
+    @Query(value = "MATCH (p:Post)-[:AUTHORED_BY]->(a:Person {id: $authorId}) RETURN p",
+            countQuery = "MATCH (p:Post)-[:AUTHORED_BY]->(a:Person {id: $authorId}) RETURN count(p)")
     Page<Post> findAllByAuthorId(Long authorId, Pageable pageable);
+
 }

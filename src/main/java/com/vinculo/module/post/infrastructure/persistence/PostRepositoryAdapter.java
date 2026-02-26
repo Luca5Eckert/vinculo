@@ -44,7 +44,9 @@ public class PostRepositoryAdapter implements PostRepository {
 
     @Override
     public Page<Post> findAllByAuthorId(long authorId, int limit, int skip) {
-        PageRequest pageRequest = PageRequest.of(skip, limit);
+        int page = skip / limit;
+
+        PageRequest pageRequest = PageRequest.of(page, limit);
 
         return postRepositoryNeo4j.findAllByAuthorId(authorId, pageRequest);
     }
