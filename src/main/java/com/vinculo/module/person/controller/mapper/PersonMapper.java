@@ -18,9 +18,7 @@ public class PersonMapper {
     public PersonResponse toPersonResponse(Person person) {
         return new PersonResponse(
                 person.getId(),
-                person.getName(),
-                person.getEmail(),
-                person.getPhoneNumber()
+                person.getName()
         );
     }
 }
