@@ -15,7 +15,7 @@ public interface PostRepositoryNeo4j extends Neo4jRepository<Post, String> {
 
     @Query(value = """
             MATCH (me:Person)-[conn:CONNECTED_WITH]-(friend:Person)
-            WHERE elementId(me) = $personId
+            WHERE elementId(me) = $personId AND elementId(friend) <> $personId
             MATCH (friend)-[posted:POSTED]->(post:Post)
             RETURN post, posted, friend
             ORDER BY conn.weight ASC, post.createdAt DESC
@@ -23,7 +23,7 @@ public interface PostRepositoryNeo4j extends Neo4jRepository<Post, String> {
             """,
             countQuery = """
                 MATCH (me:Person)-[:CONNECTED_WITH]-(friend:Person)
-                WHERE elementId(me) = $personId
+                WHERE elementId(me) = $personId AND elementId(friend) <> $personId
                 MATCH (friend)-[:POSTED]->(post:Post)
                 RETURN count(post)
             """)
