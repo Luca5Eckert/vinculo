@@ -16,7 +16,7 @@ public class UpdatePersonHandler {
     }
 
     @Transactional
-    public void handle(Long personId, UpdatePersonRequest request) {
+    public void handle(String personId, UpdatePersonRequest request) {
         UpdatePersonCommand command = new UpdatePersonCommand(
                 personId,
                 request.name(),

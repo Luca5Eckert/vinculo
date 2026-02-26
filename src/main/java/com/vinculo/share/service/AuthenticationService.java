@@ -7,14 +7,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthenticationService {
 
-    public long getAuthenticatedPersonId() {
+    public String getAuthenticatedPersonId() {
         Object principal = SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
 
         if (principal instanceof Jwt jwt) {
-            String userId = jwt.getClaimAsString("user_id");
-            return Long.valueOf(userId);
+            return jwt.getClaimAsString("user_id");
         }
 
         throw new RuntimeException("User not authenticated or invalid token");

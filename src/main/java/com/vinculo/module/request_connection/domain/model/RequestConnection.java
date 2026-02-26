@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @Builder
 public class RequestConnection {
 
-    @Id @GeneratedValue
-    private Long id;
+    @Id @GeneratedValue(generatorClass = GeneratedValue.UUIDGenerator.class)
+    private String id;
 
     private LocalDateTime createdAt;
 

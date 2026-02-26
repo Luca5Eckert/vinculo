@@ -17,7 +17,7 @@ public class RequestConnectionRepositoryAdapter implements RequestConnectionRepo
     }
 
     @Override
-    public boolean existsBySenderIdAndReceiverId(long personSenderId, long personReceiverId) {
+    public boolean existsBySenderIdAndReceiverId(String personSenderId, String personReceiverId) {
         return requestConnectionRepositoryNeo4j.existsByRequesterIdAndTargetId(personSenderId, personReceiverId);
     }
 
@@ -27,17 +27,17 @@ public class RequestConnectionRepositoryAdapter implements RequestConnectionRepo
     }
 
     @Override
-    public Optional<RequestConnection> findById(long id) {
+    public Optional<RequestConnection> findById(String id) {
         return requestConnectionRepositoryNeo4j.findById(id);
     }
 
     @Override
-    public List<RequestConnection> findAllByTargetId(long personId) {
+    public List<RequestConnection> findAllByTargetId(String personId) {
         return requestConnectionRepositoryNeo4j.findAllByTargetId(personId);
     }
 
     @Override
-    public Optional<RequestConnection> findByAnyRequesterOrTarget(long requesterId, long targetId) {
+    public Optional<RequestConnection> findByAnyRequesterOrTarget(String requesterId, String targetId) {
         return requestConnectionRepositoryNeo4j.findByAnyRequesterOrTarget(requesterId, targetId);
     }
 

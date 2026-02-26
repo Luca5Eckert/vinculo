@@ -33,10 +33,10 @@ public class RequestConnectionController {
 
     @PostMapping("/{personTargetId}")
     public ResponseEntity<Void> send(
-            @PathVariable(value = "personTargetId") Long personTargetId,
+            @PathVariable(value = "personTargetId") String personTargetId,
             @Validated @RequestBody SendRequestConnectionRequest request
     ) {
-        long personRequesterId = authenticationService.getAuthenticatedPersonId();
+        String personRequesterId = authenticationService.getAuthenticatedPersonId();
 
         sendRequestConnectionHandler.handle(personRequesterId, personTargetId, request);
 
@@ -47,10 +47,10 @@ public class RequestConnectionController {
 
     @PutMapping("/{requestConnectionId}")
     public ResponseEntity<Void> update(
-            @PathVariable(value = "requestConnectionId") Long requestConnectionId,
+            @PathVariable(value = "requestConnectionId") String requestConnectionId,
             @Validated @RequestBody UpdateStatusRequestConnectionRequest request
     ) {
-        long personTargetId = authenticationService.getAuthenticatedPersonId();
+        String personTargetId = authenticationService.getAuthenticatedPersonId();
 
         updateStatusRequestConnectionHandler.handle(
                 requestConnectionId,
@@ -65,7 +65,7 @@ public class RequestConnectionController {
 
     @GetMapping("/me")
     public ResponseEntity<List<RequestConnectionResponse>> getMyRequestConnections() {
-        long personId = authenticationService.getAuthenticatedPersonId();
+        String personId = authenticationService.getAuthenticatedPersonId();
 
         var requestConnections = getMyRequestConnectionsHandler.handle(personId);
 

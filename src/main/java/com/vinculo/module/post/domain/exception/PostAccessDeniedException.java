@@ -5,7 +5,7 @@ public class PostAccessDeniedException extends PostDomainException {
         super(message);
     }
 
-    public PostAccessDeniedException(Long viewerId, Long authorId) {
+    public PostAccessDeniedException(String viewerId, String authorId) {
         super("User with ID " + viewerId + " does not have access to the post authored by user with ID " + authorId);
     }
 }

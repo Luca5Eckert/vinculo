@@ -11,22 +11,28 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PostRepositoryNeo4j extends Neo4jRepository<Post, Long> {
+public interface PostRepositoryNeo4j extends Neo4jRepository<Post, String> {
 
-    @Query("""
+    @Query(value = """
             MATCH (me:Person {id: $personId})-[c:CONNECTED_WITH]->(author:Person)
             MATCH (author)-[rel:POSTED]->(p:Post)
             RETURN p, rel, author
             ORDER BY c.weight ASC, p.createdAt DESC
-            SKIP $pageable.offset LIMIT $pageable.pageSize
+            SKIP $skip LIMIT $limit
             """)
     List<Post> findNetworkFeed(
-            @Param("personId") Long personId,
-            @Param("pageable") Pageable pageable
+            @Param("personId") String personId,
+            @Param("skip") long skip,
+            @Param("limit") int limit
     );
 
-    @Query(value = "MATCH (p:Post)-[:AUTHORED_BY]->(a:Person {id: $authorId}) RETURN p",
-            countQuery = "MATCH (p:Post)-[:AUTHORED_BY]->(a:Person {id: $authorId}) RETURN count(p)")
-    Page<Post> findAllByAuthorId(Long authorId, Pageable pageable);
+    @Query(value = """
+            MATCH (a:Person {id: $authorId})-[rel:POSTED]->(p:Post)
+            RETURN p, rel, a
+            ORDER BY p.createdAt DESC
+            SKIP $skip LIMIT $limit
+            """,
+            countQuery = "MATCH (a:Person {id: $authorId})-[:POSTED]->(p:Post) RETURN count(p)")
+    Page<Post> findAllByAuthorId(@Param("authorId") String authorId, @Param("skip") long skip, @Param("limit") int limit, Pageable pageable);
 
 }

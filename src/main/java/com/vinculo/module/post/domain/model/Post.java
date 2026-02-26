@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
 public class Post {
 
     @Id
-    @GeneratedValue
-    private long id;
+    @GeneratedValue(generatorClass = GeneratedValue.UUIDGenerator.class)
+    private String id;
 
     private String content;
 
@@ -30,7 +30,7 @@ public class Post {
     private Person author;
 
 
-    public boolean canDelete(long personId) {
-        return this.author.getId() == personId;
+    public boolean canDelete(String personId) {
+        return this.author.getId().equals(personId);
     }
 }

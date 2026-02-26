@@ -13,17 +13,17 @@ public interface PersonRepository {
 
     boolean existsByEmail(String email);
 
-    boolean existsById(Long personId);
+    boolean existsById(String personId);
 
-    void deleteById(Long personId);
+    void deleteById(String personId);
 
-    Optional<Person> findById(Long personId);
+    Optional<Person> findById(String personId);
 
     Optional<Person> findByEmail(String username);
 
-    boolean existsConnectionBetween(Long personId, Long connectedPersonId);
+    boolean existsConnectionBetween(String personId, String connectedPersonId);
 
     Page<Person> findAll(int page, int size);
 
-    boolean isConnected(Long authId, Long personId);
+    boolean isConnected(String authId, String personId);
 }

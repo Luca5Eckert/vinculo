@@ -14,7 +14,7 @@ public class GetPersonUseCase {
         this.personRepository = personRepository;
     }
 
-    public Person execute(Long personId) {
+    public Person execute(String personId) {
         return personRepository.findById(personId)
                 .orElseThrow(PersonNotExistException::new);
     }

@@ -21,7 +21,7 @@ public class CreatePostHandler {
     }
 
     @Transactional
-    public PostResponse handle(CreatePostRequest request, long personId){
+    public PostResponse handle(CreatePostRequest request, String personId){
         var command = CreatePostCommand.of(request.content(), personId);
 
         var post = createPostUseCase.execute(command);

@@ -15,7 +15,7 @@ public class DeletePersonHandler {
     }
 
     @Transactional
-    public void handle(Long personId){
+    public void handle(String personId){
         DeletePersonCommand command = new DeletePersonCommand(
                 personId
         );

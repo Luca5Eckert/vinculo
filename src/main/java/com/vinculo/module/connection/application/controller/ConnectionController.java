@@ -23,7 +23,7 @@ public class ConnectionController {
 
     @GetMapping("/me")
     public ResponseEntity<List<ConnectionResponse>> getMyConnections(){
-        long personId = authenticationService.getAuthenticatedPersonId();
+        String personId = authenticationService.getAuthenticatedPersonId();
 
         var response = getMyConnectionsHandler.handle(personId);
 

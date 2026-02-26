@@ -15,7 +15,7 @@ public class DeletePostHandler {
     }
 
     @Transactional
-    public void handle(long postId, long personId){
+    public void handle(String postId, String personId){
         var command = DeletePostCommand.of(postId, personId);
 
         deletePostUseCase.execute(command);

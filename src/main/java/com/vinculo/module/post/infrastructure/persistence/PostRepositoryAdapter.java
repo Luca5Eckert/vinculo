@@ -24,33 +24,28 @@ public class PostRepositoryAdapter implements PostRepository {
     }
 
     @Override
-    public Optional<Post> findById(long id) {
+    public Optional<Post> findById(String id) {
         return postRepositoryNeo4j.findById(id);
     }
 
     @Override
-    public void deleteById(long id) {
+    public void deleteById(String id) {
         postRepositoryNeo4j.deleteById(id);
     }
 
     @Override
-    public List<Post> findNetworkFeed(long personId, int limit, int skip) {
-        int page = skip / limit;
-
-        PageRequest pageRequest = PageRequest.of(page, limit);
-
+    public List<Post> findNetworkFeed(String personId, int limit, int skip) {
         return postRepositoryNeo4j.findNetworkFeed(
                 personId,
-                pageRequest
+                skip,
+                limit
         );
     }
 
     @Override
-    public Page<Post> findAllByAuthorId(long authorId, int limit, int skip) {
-        int page = skip / limit;
+    public Page<Post> findAllByAuthorId(String authorId, int limit, int skip) {
+        PageRequest pageRequest = PageRequest.of(0, limit);
 
-        PageRequest pageRequest = PageRequest.of(page, limit);
-
-        return postRepositoryNeo4j.findAllByAuthorId(authorId, pageRequest);
+        return postRepositoryNeo4j.findAllByAuthorId(authorId, skip, limit, pageRequest);
     }
 }

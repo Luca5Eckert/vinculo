@@ -9,11 +9,11 @@ import java.util.Optional;
 public interface PostRepository {
     Post save(Post post);
 
-    Optional<Post> findById(long id);
+    Optional<Post> findById(String id);
 
-    void deleteById(long id);
+    void deleteById(String id);
 
-    List<Post> findNetworkFeed(long personId, int limit, int skip);
+    List<Post> findNetworkFeed(String personId, int limit, int skip);
 
-    Page<Post> findAllByAuthorId(long authorId, int limit, int skip);
+    Page<Post> findAllByAuthorId(String authorId, int limit, int skip);
 }

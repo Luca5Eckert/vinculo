@@ -20,7 +20,7 @@ public class GetAllForPersonHandler {
         this.postMapper = postMapper;
     }
 
-    public List<PostResponse> handle(long personId, int limit, int skip){
+    public List<PostResponse> handle(String personId, int limit, int skip){
         var command = GetAllForPersonCommand.of(personId, limit, skip);
 
         var posts = getAllForPersonUseCase.execute(command);

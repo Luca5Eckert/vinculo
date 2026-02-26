@@ -19,8 +19,8 @@ import java.util.Set;
 @Builder
 public class Person {
 
-    @Id @GeneratedValue
-    private Long id;
+    @Id @GeneratedValue(generatorClass = GeneratedValue.UUIDGenerator.class)
+    private String id;
     private String name;
     private String username;
     private String email;

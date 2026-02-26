@@ -33,17 +33,17 @@ public class PersonRepositoryAdapter implements PersonRepository {
     }
 
     @Override
-    public boolean existsById(Long personId) {
+    public boolean existsById(String personId) {
         return personRepositoryNeo4j.existsById(personId);
     }
 
     @Override
-    public void deleteById(Long personId) {
+    public void deleteById(String personId) {
         personRepositoryNeo4j.deleteById(personId);
     }
 
     @Override
-    public Optional<Person> findById(Long personId) {
+    public Optional<Person> findById(String personId) {
         return personRepositoryNeo4j.findById(personId);
     }
 
@@ -53,7 +53,7 @@ public class PersonRepositoryAdapter implements PersonRepository {
     }
 
     @Override
-    public boolean existsConnectionBetween(Long personId, Long connectedPersonId){
+    public boolean existsConnectionBetween(String personId, String connectedPersonId){
         return personRepositoryNeo4j.existsConnectionBetween(personId, connectedPersonId);
     }
 
@@ -68,7 +68,7 @@ public class PersonRepositoryAdapter implements PersonRepository {
     }
 
     @Override
-    public boolean isConnected(Long authId, Long personId) {
+    public boolean isConnected(String authId, String personId) {
         return personRepositoryNeo4j.isConnected(authId, personId);
     }
 

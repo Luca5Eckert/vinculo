@@ -8,19 +8,17 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ConnectionRepositoryNeo4j extends Neo4jRepository<Connection, Long> {
+public interface ConnectionRepositoryNeo4j extends Neo4jRepository<Connection, String> {
 
     @Query("""
-            MATCH (p1:Person)-[r:CONNECTED_WITH]->(p2:Person)
-            WHERE p1.id = $personId
+            MATCH (p1:Person {id: $personId})-[r:CONNECTED_WITH]->(p2:Person)
             RETURN r, p1, p2
             """)
-    List<Connection> findAllByPersonId(Long personId);
+    List<Connection> findAllByPersonId(String personId);
 
     @Query("""
-            MATCH (p1:Person)-[:CONNECTED_WITH]-(p2:Person)
-            WHERE p1.id = $requesterPersonId AND p2.id = $targetPersonId
+            MATCH (p1:Person {id: $requesterPersonId})-[:CONNECTED_WITH]-(p2:Person {id: $targetPersonId})
             RETURN COUNT(p1) > 0
             """)
-    boolean existsBetween(Long requesterPersonId, Long targetPersonId);
+    boolean existsBetween(String requesterPersonId, String targetPersonId);
 }
