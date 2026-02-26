@@ -14,7 +14,7 @@ public class CreateConnectionHandler {
         this.createConnectionUseCase = createConnectionUseCase;
     }
 
-    public void handle(CreateConnectionRequest request, long personId){
+    public void handle(CreateConnectionRequest request, String personId){
         CreateConnectionCommand command = new CreateConnectionCommand(
                 personId,
                 request.personToConnectId(),

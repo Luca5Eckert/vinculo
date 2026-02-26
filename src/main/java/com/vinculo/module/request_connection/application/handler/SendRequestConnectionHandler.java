@@ -16,7 +16,7 @@ public class SendRequestConnectionHandler {
     }
 
     @Transactional
-    public void handle(Long personRequesterId, Long personTargetId, SendRequestConnectionRequest request) {
+    public void handle(String personRequesterId, String personTargetId, SendRequestConnectionRequest request) {
         SendRequestConnectionCommand command = new SendRequestConnectionCommand(
                 personRequesterId,
                 personTargetId,

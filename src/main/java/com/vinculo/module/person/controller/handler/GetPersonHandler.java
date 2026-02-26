@@ -22,7 +22,7 @@ public class GetPersonHandler {
     }
 
     @Transactional(readOnly = true)
-    public PersonResponse handle(long authenticatedPerson, Long personId) {
+    public PersonResponse handle(String authenticatedPerson, String personId) {
         Person person = getPersonUseCase.execute(personId);
 
         boolean fullAccess = personVisibilityPolicy.haveFullAccess(authenticatedPerson, person.getId());

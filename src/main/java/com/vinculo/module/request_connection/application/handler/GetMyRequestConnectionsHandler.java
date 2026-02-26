@@ -21,7 +21,7 @@ public class GetMyRequestConnectionsHandler {
     }
 
     @Transactional(readOnly = true)
-    public List<RequestConnectionResponse> handle(long personId){
+    public List<RequestConnectionResponse> handle(String personId){
         var requestConnections = getMyRequestConnectionsUseCase.execute(personId);
 
         return requestConnections.stream()

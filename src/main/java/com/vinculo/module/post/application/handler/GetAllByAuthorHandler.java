@@ -21,8 +21,8 @@ public class GetAllByAuthorHandler {
     }
 
     public List<PostResponse> handle(
-            long personAuthenticatedId,
-            long authorId,
+            String personAuthenticatedId,
+            String authorId,
             int limit,
             int skip
     ){

@@ -17,12 +17,12 @@ public class ConnectionRepositoryAdapter implements ConnectionRepository {
 
 
     @Override
-    public List<Connection> findAllByPersonId(long personId) {
+    public List<Connection> findAllByPersonId(String personId) {
         return connectionRepositoryNeo4j.findAllByPersonId(personId);
     }
 
     @Override
-    public boolean existsBetween(long requesterPersonId, long targetPersonId) {
+    public boolean existsBetween(String requesterPersonId, String targetPersonId) {
         return connectionRepositoryNeo4j.existsBetween(requesterPersonId, targetPersonId);
     }
 

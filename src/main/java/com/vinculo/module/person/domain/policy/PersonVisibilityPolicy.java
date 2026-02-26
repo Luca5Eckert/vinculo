@@ -13,8 +13,8 @@ public class PersonVisibilityPolicy {
         this.connectionRepository = connectionRepository;
     }
 
-    public boolean haveFullAccess(long viewerId, long personId) {
-        if(viewerId == personId) return true;
+    public boolean haveFullAccess(String viewerId, String personId) {
+        if(viewerId.equals(personId)) return true;
 
         return connectionRepository.existsBetween(viewerId, personId);
     }

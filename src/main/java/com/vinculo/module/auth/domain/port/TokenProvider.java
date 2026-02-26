@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface TokenProvider {
 
-    public String createToken(String email, long userId, List<String> roles);
+    public String createToken(String email, String userId, List<String> roles);
 
 }

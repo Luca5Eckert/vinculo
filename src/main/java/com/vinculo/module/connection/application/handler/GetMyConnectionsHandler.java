@@ -21,7 +21,7 @@ public class GetMyConnectionsHandler {
     }
 
     @Transactional(readOnly = true)
-    public List<ConnectionResponse> handle(long userId) {
+    public List<ConnectionResponse> handle(String userId) {
         var connections = getMyConnectionsUseCase.execute(userId);
 
         return connections

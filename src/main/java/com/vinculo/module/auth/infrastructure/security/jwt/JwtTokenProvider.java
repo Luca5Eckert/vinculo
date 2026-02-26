@@ -32,7 +32,7 @@ public class JwtTokenProvider implements TokenProvider {
     }
 
     @Override
-    public String createToken(String email, long userId, List<String> roles) {
+    public String createToken(String email, String userId, List<String> roles) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 

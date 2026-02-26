@@ -19,7 +19,7 @@ public class GetMyNetworkHandler {
         this.personMapper = personMapper;
     }
 
-    public List<PersonResponse> handle(Long personId) {
+    public List<PersonResponse> handle(String personId) {
         var command = GetNetworkCommand.of(personId);
 
         var network = getNetworkUseCase.execute(command);

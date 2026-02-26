@@ -19,7 +19,7 @@ public class UpdateStatusRequestConnectionHandler {
     }
 
     @Transactional
-    public void handle(long requestConnectionId, long targetPersonId, UpdateStatusRequestConnectionRequest request) {
+    public void handle(String requestConnectionId, String targetPersonId, UpdateStatusRequestConnectionRequest request) {
         UpdateStatusRequestConnectionCommand command = new UpdateStatusRequestConnectionCommand(
                 requestConnectionId, targetPersonId, request.status()
         );

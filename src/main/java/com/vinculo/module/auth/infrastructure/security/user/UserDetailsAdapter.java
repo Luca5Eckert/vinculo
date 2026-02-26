@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 public record UserDetailsAdapter(
-        long id,
+        String id,
         String email,
         String password,
         Collection<? extends GrantedAuthority> authorities

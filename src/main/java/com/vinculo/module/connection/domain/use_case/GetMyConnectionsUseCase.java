@@ -17,7 +17,7 @@ public class GetMyConnectionsUseCase {
         this.personRepository = personRepository;
     }
 
-    public Set<Connection> execute(long personId){
+    public Set<Connection> execute(String personId){
         Person person = personRepository.findById(personId)
                 .orElseThrow(PersonNotExistException::new);
 

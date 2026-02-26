@@ -3,9 +3,9 @@ package com.vinculo.module.post.application.dto;
 import java.time.LocalDateTime;
 
 public record PostResponse(
-        long id,
+        String id,
         String content,
         LocalDateTime createdAt,
-        long authorId
+        String authorId
 ) {
 }

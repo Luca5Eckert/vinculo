@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RequestConnectionRepository {
-    boolean existsBySenderIdAndReceiverId(long personSenderId, long personReceiverId);
+    boolean existsBySenderIdAndReceiverId(String personSenderId, String personReceiverId);
 
     RequestConnection save(RequestConnection requestConnection);
 
-    Optional<RequestConnection> findById(long id);
+    Optional<RequestConnection> findById(String id);
 
-    List<RequestConnection> findAllByTargetId(long personId);
+    List<RequestConnection> findAllByTargetId(String personId);
 
-    Optional<RequestConnection> findByAnyRequesterOrTarget(long requesterId, long targetId);
+    Optional<RequestConnection> findByAnyRequesterOrTarget(String requesterId, String targetId);
 
     void delete(RequestConnection existingRequest);
 }

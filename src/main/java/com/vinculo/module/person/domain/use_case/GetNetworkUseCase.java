@@ -27,7 +27,7 @@ public class GetNetworkUseCase {
         return targetPerson.getConnectedPeople();
     }
 
-    private void validateAccess(Long authId, Person target) {
+    private void validateAccess(String authId, Person target) {
         boolean isOwner = authId.equals(target.getId());
 
         if (!isOwner && !personRepository.isConnected(authId, target.getId())) {

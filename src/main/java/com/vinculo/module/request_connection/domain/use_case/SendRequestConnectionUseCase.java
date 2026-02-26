@@ -23,7 +23,7 @@ public class SendRequestConnectionUseCase {
     }
 
     public void execute(SendRequestConnectionCommand command) {
-        if (command.personRequesterId() == command.personTargetId()) {
+        if (command.personRequesterId().equals(command.personTargetId())) {
             throw new RequesterAndTargetCannotBeTheSameException();
         }
 
@@ -47,14 +47,14 @@ public class SendRequestConnectionUseCase {
         requestConnectionRepository.save(requestConnection);
     }
 
-    private void handleExistingRequest(RequestConnection existingRequest, long currentRequesterId) {
+    private void handleExistingRequest(RequestConnection existingRequest, String currentRequesterId) {
         if (existingRequest.getStatus() != StatusRequestConnection.REJECTED) {
             throw new RequestConnectionAlreadyExistsException(
                     "A connection request is already active or accepted between these users."
             );
         }
 
-        if (existingRequest.getRequester().getId() == currentRequesterId) {
+        if (existingRequest.getRequester().getId().equals(currentRequesterId)) {
             throw new RequestConnectionAlreadyExistsException(
                     "Your previous request was rejected. You cannot send a new one to this user."
             );

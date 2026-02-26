@@ -28,7 +28,7 @@ public class UpdateStatusRequestConnectionUseCase {
         if(request.getStatus() == StatusRequestConnection.ACCEPTED){
             throw new RequestConnectionException("Request connection already accepted");
         }
-        if (request.getTarget().getId() != command.targetPersonId()) {
+        if (!request.getTarget().getId().equals(command.targetPersonId())) {
             throw new RequestConnectionIsNotForTargetPersonException();
         }
 
@@ -39,7 +39,7 @@ public class UpdateStatusRequestConnectionUseCase {
         return repository.save(request);
     }
 
-    private void verifyConnectionBetweenAlreadyExists(Long requesterPersonId, Long targetPersonId) {
+    private void verifyConnectionBetweenAlreadyExists(String requesterPersonId, String targetPersonId) {
         if (connectionRepository.existsBetween(requesterPersonId, targetPersonId)) {
             throw new RequestConnectionException("Connection between requester and target person already exists");
         }

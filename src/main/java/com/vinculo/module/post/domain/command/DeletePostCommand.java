@@ -1,10 +1,10 @@
 package com.vinculo.module.post.domain.command;
 
 public record DeletePostCommand(
-        long postId,
-        long personId
+        String postId,
+        String personId
 ) {
-    public static DeletePostCommand of(long postId, long personId) {
+    public static DeletePostCommand of(String postId, String personId) {
         return new DeletePostCommand(
                 postId,
                 personId

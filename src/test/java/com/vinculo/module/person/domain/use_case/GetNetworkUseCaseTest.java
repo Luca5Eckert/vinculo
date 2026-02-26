@@ -31,7 +31,7 @@ class GetNetworkUseCaseTest {
     @DisplayName("Should return connections when user is viewing their own network")
     void shouldReturnNetworkWhenUserIsOwner() {
         // Arrange
-        Long personId = 1L;
+        String personId = "uuid-1";
 
         Person person = Person.builder().id(personId).name("Alice").build();
         GetNetworkCommand command = new GetNetworkCommand(personId, personId);
@@ -43,17 +43,17 @@ class GetNetworkUseCaseTest {
 
         // Assert
         assertNotNull(result);
-        verify(personRepository, never()).isConnected(anyLong(), anyLong());
+        verify(personRepository, never()).isConnected(anyString(), anyString());
     }
 
     @Test
     @DisplayName("Should return connections when user is connected with the target")
     void shouldReturnNetworkWhenUserIsConnectedWithTarget() {
         // Arrange
-        Long authId = 1L;
-        Long targetId = 2L;
+        String authId = "uuid-1";
+        String targetId = "uuid-2";
 
-        Person friend = Person.builder().id(3L).name("Charlie").build();
+        Person friend = Person.builder().id("uuid-3").name("Charlie").build();
         Connection connection = new Connection();
         connection.setPerson(friend);
 
@@ -79,8 +79,8 @@ class GetNetworkUseCaseTest {
     @DisplayName("Should throw PersonException when user is not connected to the target")
     void shouldThrowExceptionWhenNotConnected() {
         // Arrange
-        Long authId = 1L;
-        Long targetId = 2L;
+        String authId = "uuid-1";
+        String targetId = "uuid-2";
         Person target = Person.builder().id(targetId).name("Bob").build();
         GetNetworkCommand command = new GetNetworkCommand(authId, targetId);
 

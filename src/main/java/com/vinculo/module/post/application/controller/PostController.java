@@ -49,7 +49,7 @@ public class PostController {
 
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> delete(
-            @PathVariable long postId
+            @PathVariable String postId
     ) {
         var personId = authenticationService.getAuthenticatedPersonId();
 
@@ -74,7 +74,7 @@ public class PostController {
 
     @GetMapping("/{authorId}")
     public ResponseEntity<List<PostResponse>> getByPerson(
-            @PathVariable(name = "authorId") long authorId,
+            @PathVariable(name = "authorId") String authorId,
             @RequestParam(defaultValue = "0") int skip,
             @RequestParam(defaultValue = "10") int limit
     ) {

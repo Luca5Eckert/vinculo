@@ -12,8 +12,8 @@ public class PostVisibilityPolicy {
         this.connectionRepository = connectionRepository;
     }
 
-    public boolean canView(long authenticatedPerson, long postOwner) {
-        if (authenticatedPerson == postOwner) {
+    public boolean canView(String authenticatedPerson, String postOwner) {
+        if (authenticatedPerson.equals(postOwner)) {
             return true;
         }
 

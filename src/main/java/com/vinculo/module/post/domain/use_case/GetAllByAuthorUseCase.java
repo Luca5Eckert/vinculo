@@ -33,7 +33,7 @@ public class GetAllByAuthorUseCase {
         );
     }
 
-    private void validateVisibility(Long viewerId, Long authorId) {
+    private void validateVisibility(String viewerId, String authorId) {
         if (!postVisibilityPolicy.canView(viewerId, authorId)) {
             throw new PostAccessDeniedException(viewerId, authorId);
         }

@@ -1,9 +1,9 @@
 package com.vinculo.module.connection.application.dto;
 
 public record PersonResponseConnection(
-        long id,
+        String id,
         String name,
         String email,
-        String phoreNumber
+        String phoneNumber
 ) {
 }

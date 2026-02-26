@@ -16,7 +16,7 @@ import org.springframework.data.neo4j.core.schema.TargetNode;
 public class Connection {
 
     @RelationshipId
-    private Long id;
+    private String id;
 
     @TargetNode
     private Person person;

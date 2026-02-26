@@ -15,7 +15,7 @@ public class GetMyRequestConnectionsUseCase {
         this.requestConnectionRepository = requestConnectionRepository;
     }
 
-    public List<RequestConnection> execute(long personId){
+    public List<RequestConnection> execute(String personId){
         return requestConnectionRepository.findAllByTargetId(personId);
     }
 

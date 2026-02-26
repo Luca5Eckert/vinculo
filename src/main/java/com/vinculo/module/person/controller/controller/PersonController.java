@@ -51,7 +51,7 @@ public class PersonController {
 
     @DeleteMapping("/{authorId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable(value = "authorId") Long personId){
+    public ResponseEntity<Void> delete(@PathVariable(value = "authorId") String personId){
         deletePersonHandler.handle(personId);
 
         return ResponseEntity
@@ -60,7 +60,7 @@ public class PersonController {
     }
 
     @GetMapping("/{authorId}")
-    public ResponseEntity<PersonResponse> getById(@PathVariable Long personId) {
+    public ResponseEntity<PersonResponse> getById(@PathVariable String personId) {
         var authenticatedPersonId = authenticationService.getAuthenticatedPersonId();
 
         PersonResponse response = getPersonHandler.handle(authenticatedPersonId, personId);
@@ -70,7 +70,7 @@ public class PersonController {
 
     @PutMapping("/{authorId}")
     public ResponseEntity<Void> update(
-            @PathVariable Long personId,
+            @PathVariable String personId,
             @Validated @RequestBody UpdatePersonRequest request
     ) {
         updatePersonHandler.handle(personId, request);
@@ -100,7 +100,7 @@ public class PersonController {
     }
 
     @GetMapping("/{id}/network")
-    public ResponseEntity<List<PersonResponse>> getNetworkByPersonId(@PathVariable Long id) {
+    public ResponseEntity<List<PersonResponse>> getNetworkByPersonId(@PathVariable String id) {
         var authenticatedPersonId = authenticationService.getAuthenticatedPersonId();
 
         var responses = getNetworkByPersonIdHandler.handle(authenticatedPersonId, id);
