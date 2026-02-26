@@ -15,10 +15,15 @@ public class PersonMapper {
         );
     }
 
-    public PersonResponse toPersonResponse(Person person) {
+    public PersonResponse toResponse(Person person, boolean fullAccess) {
         return new PersonResponse(
                 person.getId(),
-                person.getName()
+                person.getName(),
+                person.getUsername(),
+                fullAccess ? person.getEmail() : null,
+                fullAccess ? person.getPhoneNumber() : null,
+                fullAccess
         );
     }
+
 }

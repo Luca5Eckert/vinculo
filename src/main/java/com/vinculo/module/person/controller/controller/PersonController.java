@@ -5,6 +5,7 @@ import com.vinculo.module.person.controller.dto.GetAllPersonResponse;
 import com.vinculo.module.person.controller.dto.PersonResponse;
 import com.vinculo.module.person.controller.dto.UpdatePersonRequest;
 import com.vinculo.module.person.controller.handler.*;
+import com.vinculo.share.service.AuthenticationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,12 +24,15 @@ public class PersonController {
     private final UpdatePersonHandler updatePersonHandler;
     private final GetAllPersonHandler getAllPersonHandler;
 
-    public PersonController(CreatePersonHandler createPersonHandler, DeletePersonHandler deletePersonHandler, GetPersonHandler getPersonHandler, UpdatePersonHandler updatePersonHandler, GetAllPersonHandler getAllPersonHandler) {
+    private final AuthenticationService authenticationService;
+
+    public PersonController(CreatePersonHandler createPersonHandler, DeletePersonHandler deletePersonHandler, GetPersonHandler getPersonHandler, UpdatePersonHandler updatePersonHandler, GetAllPersonHandler getAllPersonHandler, AuthenticationService authenticationService) {
         this.createPersonHandler = createPersonHandler;
         this.deletePersonHandler = deletePersonHandler;
         this.getPersonHandler = getPersonHandler;
         this.updatePersonHandler = updatePersonHandler;
         this.getAllPersonHandler = getAllPersonHandler;
+        this.authenticationService = authenticationService;
     }
 
     @PostMapping
@@ -53,7 +57,9 @@ public class PersonController {
     @GetMapping("/{authorId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PersonResponse> getById(@PathVariable Long personId) {
-        PersonResponse response = getPersonHandler.handle(personId);
+        var authenticatedPersonId = authenticationService.getAuthenticatedPersonId();
+
+        PersonResponse response = getPersonHandler.handle(authenticatedPersonId, personId);
 
         return ResponseEntity.ok(response);
     }
