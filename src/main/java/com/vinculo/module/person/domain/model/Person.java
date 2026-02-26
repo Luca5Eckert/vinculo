@@ -21,9 +21,11 @@ public class Person {
     @Id @GeneratedValue
     private Long id;
 
-    private String email;
-
     private String name;
+
+    private String username;
+
+    private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;

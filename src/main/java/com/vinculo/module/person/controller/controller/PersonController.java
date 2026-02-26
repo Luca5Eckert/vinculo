@@ -51,6 +51,7 @@ public class PersonController {
     }
 
     @GetMapping("/{authorId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PersonResponse> getById(@PathVariable Long personId) {
         PersonResponse response = getPersonHandler.handle(personId);
 
@@ -70,6 +71,7 @@ public class PersonController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<GetAllPersonResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size

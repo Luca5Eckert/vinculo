@@ -19,6 +19,7 @@ public class CreatePersonHandler {
     public void handle(CreatePersonRequest request){
         CreatePersonCommand command = new CreatePersonCommand(
                 request.name(),
+                request.username(),
                 request.phoneNumber(),
                 request.email(),
                 request.password()

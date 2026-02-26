@@ -36,6 +36,7 @@ public class CreatePersonUseCase {
 
         Person person = Person.builder()
                 .name(command.name())
+                .username(command.username())
                 .email(command.email())
                 .phoneNumber(command.phoneNumber())
                 .password(passwordHash)
