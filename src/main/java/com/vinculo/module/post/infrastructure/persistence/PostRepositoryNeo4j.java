@@ -17,15 +17,15 @@ public interface PostRepositoryNeo4j extends Neo4jRepository<Post, String> {
             MATCH (me:Person)-[conn:CONNECTED_WITH]-(friend:Person)
             WHERE elementId(me) = $personId AND elementId(friend) <> $personId
             MATCH (friend)-[posted:POSTED]->(post:Post)
-            RETURN post, posted, friend
-            ORDER BY conn.weight ASC, post.createdAt DESC
+            RETURN DISTINCT post, posted, friend
+            ORDER BY post.createdAt DESC
             SKIP $skip LIMIT $limit
             """,
             countQuery = """
                 MATCH (me:Person)-[:CONNECTED_WITH]-(friend:Person)
                 WHERE elementId(me) = $personId AND elementId(friend) <> $personId
                 MATCH (friend)-[:POSTED]->(post:Post)
-                RETURN count(post)
+                RETURN count(DISTINCT post)
             """)
     Page<Post> findNetworkFeed(@Param("personId") String personId, Pageable pageable);
 
