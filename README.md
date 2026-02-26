@@ -35,6 +35,7 @@ Vinculo allows users to:
 - Create and manage personal profiles
 - Send and receive connection requests
 - Build a network of categorized connections (friends, colleagues, family, etc.)
+- Publish and view posts on their feed and on other users' profiles
 - Manage relationships stored natively in a graph database
 
 ### Why Graph Database?
@@ -62,6 +63,13 @@ Traditional relational databases use JOIN operations to query relationships, whi
 - 9 connection types: PARTNER, FAMILY, FRIEND, BUSINESS_PARTNER, MENTOR, REFERRAL, COLLEAGUE, BUDDY, ACQUAINTANCE
 - Weighted relationships (tier 1-5 based on connection type)
 - Bidirectional connections (when a request is accepted, both users are connected)
+
+### Posts
+- Create text posts visible to other users
+- View your own feed (posts from all connections)
+- Browse posts by a specific user's profile
+- Delete your own posts
+- Paginated listing with configurable skip/limit
 
 ### Connection Request Workflow
 1. User A sends a connection request to User B (status: PENDING)
@@ -218,6 +226,11 @@ src/main/java/com/vinculo/
 │   ├── connection/              # Connection management module
 │   │   ├── application/         # API layer
 │   │   ├── domain/              # Connection business logic
+│   │   └── infrastructure/      # Neo4j persistence
+│   │
+│   ├── post/                    # Post module
+│   │   ├── application/         # API layer (controller, DTOs, handlers, mappers)
+│   │   ├── domain/              # Post business logic (use cases, model, ports)
 │   │   └── infrastructure/      # Neo4j persistence
 │   │
 │   └── request_connection/      # Connection request module
@@ -441,13 +454,12 @@ export JWT_KEY=your_jwt_secret_key_minimum_256_bits
 ### Verify Installation
 
 ```bash
-curl http://localhost:8080/actuator/health
+curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"wrong"}'
 ```
 
-Expected response:
-```json
-{"status":"UP"}
-```
+Expected response: `401` (server is up and responding)
 
 ## 📚 API Documentation
 
@@ -577,6 +589,53 @@ Authorization: Bearer {token}
 
 Returns all established connections for the authenticated user.
 
+### Post Endpoints
+
+#### Create Post
+```http
+POST /v1/posts
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "content": "Hello, Vinculo!"
+}
+```
+
+Response: `201 Created`
+```json
+{
+  "id": 42,
+  "content": "Hello, Vinculo!",
+  "createdAt": "2024-01-15T10:30:00",
+  "authorId": 1
+}
+```
+
+#### Get My Feed
+```http
+GET /v1/posts?skip=0&limit=10
+Authorization: Bearer {token}
+```
+
+Returns posts visible to the authenticated user.
+
+#### Get Posts by Author
+```http
+GET /v1/posts/{authorId}?skip=0&limit=10
+Authorization: Bearer {token}
+```
+
+Returns all posts published by a specific user.
+
+#### Delete Post
+```http
+DELETE /v1/posts/{postId}
+Authorization: Bearer {token}
+```
+
+Response: `204 No Content`. Only the post owner can delete their own posts.
+
 ## 🗂️ Database Schema
 
 ### Neo4j Graph Model
@@ -596,12 +655,20 @@ RequestConnection Node:
 - status: String (PENDING | ACCEPTED | REJECTED)
 - createdAt: DateTime
 
+Post Node:
+- id: Long
+- content: String
+- createdAt: DateTime
+
 Relationships:
 - Person -[FROM]-> RequestConnection -[TO]-> Person
   (represents a connection request)
 
 - Person -[CONNECTED_WITH {type, weight}]-> Person
   (bidirectional, created when request is accepted)
+
+- Person -[AUTHORED]-> Post
+  (person is the author of the post)
 ```
 
 ### Connection Types and Weights
