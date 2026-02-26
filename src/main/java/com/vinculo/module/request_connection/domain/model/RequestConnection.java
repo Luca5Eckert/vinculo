@@ -18,9 +18,11 @@ public class RequestConnection {
     @Id @GeneratedValue
     private Long id;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
+
     private TypeConnection type;
-    private StatusRequestConnection status = StatusRequestConnection.PENDING;
+
+    private StatusRequestConnection status;
 
     @Relationship(type = "REQUESTED_BY", direction = Relationship.Direction.OUTGOING)
     private Person requester;

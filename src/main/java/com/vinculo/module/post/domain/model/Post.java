@@ -10,7 +10,7 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 import java.time.LocalDateTime;
 
 
-@Node("post")
+@Node("Post")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
