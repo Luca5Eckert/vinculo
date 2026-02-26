@@ -10,16 +10,17 @@ import java.util.Optional;
 
 @Repository
 public interface RequestConnectionRepositoryNeo4j extends Neo4jRepository<RequestConnection, Long> {
-
     boolean existsByRequesterIdAndTargetId(Long requesterId, Long targetId);
 
     List<RequestConnection> findAllByTargetId(Long targetId);
 
     @Query("""
-            MATCH (p1:person)-[f:FROM]->(r:RequestConnection)-[t:TO]->(p2:person)
-            WHERE (id(p1) = $requesterId AND id(p2) = $targetId)
-               OR (id(p1) = $targetId AND id(p2) = $requesterId)
-            RETURN r, f, t, p1, p2 
+            MATCH (p1:Person)-[f:FROM]->(r:RequestConnection)-[t:TO]->(p2:Person)
+            
+            WHERE (p1.id = $requesterId AND p2.id = $targetId)
+               OR (p1.id = $targetId AND p2.id = $requesterId)
+            
+            RETURN r, f, t, p1, p2
             LIMIT 1
             """)
     Optional<RequestConnection> findByAnyRequesterOrTarget(Long requesterId, Long targetId);

@@ -15,7 +15,7 @@ public interface PostRepositoryNeo4j extends Neo4jRepository<Post, Long> {
 
     @Query("""
             MATCH (me:Person {id: $personId})-[c:CONNECTED_WITH]->(author:Person)
-            MATCH (author)-[rel:POSTED]->(p:post)
+            MATCH (author)-[rel:POSTED]->(p:Post)
             RETURN p, rel, author
             ORDER BY c.weight ASC, p.createdAt DESC
             SKIP $pageable.offset LIMIT $pageable.pageSize
