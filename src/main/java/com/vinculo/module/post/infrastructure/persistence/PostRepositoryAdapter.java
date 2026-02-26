@@ -35,10 +35,13 @@ public class PostRepositoryAdapter implements PostRepository {
 
     @Override
     public List<Post> findNetworkFeed(long personId, int limit, int skip) {
+        int page = skip / limit;
+
+        PageRequest pageRequest = PageRequest.of(page, limit);
+
         return postRepositoryNeo4j.findNetworkFeed(
                 personId,
-                limit,
-                skip
+                pageRequest
         );
     }
 

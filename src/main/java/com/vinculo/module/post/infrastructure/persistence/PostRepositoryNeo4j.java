@@ -14,21 +14,15 @@ import java.util.List;
 public interface PostRepositoryNeo4j extends Neo4jRepository<Post, Long> {
 
     @Query("""
-            MATCH (me:person) WHERE id(me) = $authorId
-            MATCH (me)-[connections:CONNECTED_WITH*1..2]-(author:person)-[rel:POSTED]->(post:post)
-            WHERE author <> me
-            
-            WITH post, author, rel,
-                 reduce(totalWeight = 0, r IN connections | totalWeight + r.weight) AS pathWeight
-            
-            RETURN post, rel, author
-            ORDER BY pathWeight ASC, post.createdAt DESC
-            SKIP $skip LIMIT $limit
+            MATCH (me:Person {id: $personId})-[c:CONNECTED_WITH]->(author:Person)
+            MATCH (author)-[rel:POSTED]->(p:post)
+            RETURN p, rel, author
+            ORDER BY c.weight ASC, p.createdAt DESC
+            SKIP $pageable.offset LIMIT $pageable.pageSize
             """)
     List<Post> findNetworkFeed(
-            @Param("authorId") Long authorId,
-            @Param("limit") int limit,
-            @Param("skip") int skip
+            @Param("personId") Long personId,
+            @Param("pageable") Pageable pageable
     );
 
     @Query(value = "MATCH (p:Post)-[:AUTHORED_BY]->(a:Person {id: $authorId}) RETURN p",
