@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -34,18 +33,23 @@ public class PostRepositoryAdapter implements PostRepository {
     }
 
     @Override
-    public List<Post> findNetworkFeed(String personId, int limit, int skip) {
+    public Page<Post> findNetworkFeed(String personId, int limit, int skip) {
+        int page = skip / limit;
+        PageRequest pageRequest = PageRequest.of(page, limit);
+
         return postRepositoryNeo4j.findNetworkFeed(
                 personId,
-                skip,
-                limit
+                pageRequest
         );
     }
 
     @Override
     public Page<Post> findAllByAuthorId(String authorId, int limit, int skip) {
-        PageRequest pageRequest = PageRequest.of(0, limit);
+        int page = skip / limit;
+        PageRequest pageRequest = PageRequest.of(page, limit);
 
-        return postRepositoryNeo4j.findAllByAuthorId(authorId, skip, limit, pageRequest);
+
+        return postRepositoryNeo4j.findAllByAuthorId(authorId, pageRequest);
     }
+
 }

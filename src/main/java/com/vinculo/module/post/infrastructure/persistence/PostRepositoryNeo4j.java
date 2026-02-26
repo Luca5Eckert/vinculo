@@ -14,25 +14,21 @@ import java.util.List;
 public interface PostRepositoryNeo4j extends Neo4jRepository<Post, String> {
 
     @Query(value = """
-            MATCH (me:Person {id: $personId})-[c:CONNECTED_WITH]->(author:Person)
-            MATCH (author)-[rel:POSTED]->(p:Post)
-            RETURN p, rel, author
-            ORDER BY c.weight ASC, p.createdAt DESC
+            MATCH (me:Person {id: $personId})-[rel:CONNECTED_WITH]->(friend:Person)-[:POSTED]->(post:Post)
+            RETURN post, friend
+            ORDER BY rel.weight DESC, post.createdAt DESC
             SKIP $skip LIMIT $limit
+            """,
+            countQuery = """
+                MATCH (me:Person {id: $personId})-[:CONNECTED_WITH]->(friend:Person)-[:POSTED]->(post:Post)
+                RETURN count(post)
             """)
-    List<Post> findNetworkFeed(
-            @Param("personId") String personId,
-            @Param("skip") long skip,
-            @Param("limit") int limit
-    );
+    Page<Post> findNetworkFeed(@Param("personId") String personId, Pageable pageable);
 
     @Query(value = """
             MATCH (a:Person {id: $authorId})-[rel:POSTED]->(p:Post)
             RETURN p, rel, a
-            ORDER BY p.createdAt DESC
-            SKIP $skip LIMIT $limit
-            """,
-            countQuery = "MATCH (a:Person {id: $authorId})-[:POSTED]->(p:Post) RETURN count(p)")
-    Page<Post> findAllByAuthorId(@Param("authorId") String authorId, @Param("skip") long skip, @Param("limit") int limit, Pageable pageable);
+            """, countQuery = "MATCH (a:Person {id: $authorId})-[:POSTED]->(p:Post) RETURN count(p)")
+    Page<Post> findAllByAuthorId(@Param("authorId") String authorId, Pageable pageable);
 
 }

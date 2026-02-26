@@ -2,6 +2,7 @@ package com.vinculo.module.connection.infrastructure.persistence.repository;
 
 import com.vinculo.module.connection.domain.model.Connection;
 import com.vinculo.module.connection.domain.port.ConnectionRepository;
+import com.vinculo.module.person.infrastructure.persistence.repository.PersonRepositoryNeo4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -9,21 +10,22 @@ import java.util.List;
 @Repository
 public class ConnectionRepositoryAdapter implements ConnectionRepository {
 
-    private final ConnectionRepositoryNeo4j connectionRepositoryNeo4j;
+    private final PersonRepositoryNeo4j personRepositoryNeo4j;
 
-    public ConnectionRepositoryAdapter(ConnectionRepositoryNeo4j connectionRepositoryNeo4j) {
-        this.connectionRepositoryNeo4j = connectionRepositoryNeo4j;
+    public ConnectionRepositoryAdapter(PersonRepositoryNeo4j personRepositoryNeo4j) {
+        this.personRepositoryNeo4j = personRepositoryNeo4j;
     }
 
 
     @Override
     public List<Connection> findAllByPersonId(String personId) {
-        return connectionRepositoryNeo4j.findAllByPersonId(personId);
+        return personRepositoryNeo4j.findAllConnectionsByPersonId(personId);
     }
 
     @Override
     public boolean existsBetween(String requesterPersonId, String targetPersonId) {
-        return connectionRepositoryNeo4j.existsBetween(requesterPersonId, targetPersonId);
+        return personRepositoryNeo4j.existsConnectionBetween(requesterPersonId, targetPersonId);
     }
+
 
 }

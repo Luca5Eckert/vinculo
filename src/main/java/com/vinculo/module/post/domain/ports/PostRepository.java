@@ -3,7 +3,6 @@ package com.vinculo.module.post.domain.ports;
 import com.vinculo.module.post.domain.model.Post;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface PostRepository {
@@ -13,7 +12,7 @@ public interface PostRepository {
 
     void deleteById(String id);
 
-    List<Post> findNetworkFeed(String personId, int limit, int skip);
+    Page<Post> findNetworkFeed(String personId, int limit, int skip);
 
     Page<Post> findAllByAuthorId(String authorId, int limit, int skip);
 }
