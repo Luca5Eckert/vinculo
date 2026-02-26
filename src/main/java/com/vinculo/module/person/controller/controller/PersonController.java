@@ -36,6 +36,7 @@ public class PersonController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> create(@Validated @RequestBody CreatePersonRequest request){
         createPersonHandler.handle(request);
 
@@ -55,7 +56,6 @@ public class PersonController {
     }
 
     @GetMapping("/{authorId}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PersonResponse> getById(@PathVariable Long personId) {
         var authenticatedPersonId = authenticationService.getAuthenticatedPersonId();
 
@@ -77,7 +77,6 @@ public class PersonController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<GetAllPersonResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size

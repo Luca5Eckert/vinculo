@@ -8,10 +8,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class PersonMapper {
 
-    public GetAllPersonResponse of(Person person) {
+    public GetAllPersonResponse toGetAllResponse(Person person) {
         return new GetAllPersonResponse(
                 person.getId(),
-                person.getName()
+                person.getName(),
+                person.getUsername()
         );
     }
 

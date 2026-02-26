@@ -21,7 +21,7 @@ public class DeletePostUseCase {
                 .orElseThrow(PostNotFoundException::new);
 
         if(!post.canDelete(command.personId())){
-            throw new PostDomainException("The person is not the author of the post and cannot delete it");
+            throw new PostDomainException("The person is not the author toGetAllResponse the post and cannot delete it");
         }
 
         postRepository.deleteById(post.getId());

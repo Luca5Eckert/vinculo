@@ -29,7 +29,7 @@ public class GetAllPersonHandler {
         );
 
         return persons.stream()
-                .map(personMapper::of)
+                .map(personMapper::toGetAllResponse)
                 .toList();
     }
 
