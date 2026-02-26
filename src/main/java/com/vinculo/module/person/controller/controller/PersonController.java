@@ -23,15 +23,17 @@ public class PersonController {
     private final GetPersonHandler getPersonHandler;
     private final UpdatePersonHandler updatePersonHandler;
     private final GetAllPersonHandler getAllPersonHandler;
+    private final GetNetworkHandler getNetworkHandler;
 
     private final AuthenticationService authenticationService;
 
-    public PersonController(CreatePersonHandler createPersonHandler, DeletePersonHandler deletePersonHandler, GetPersonHandler getPersonHandler, UpdatePersonHandler updatePersonHandler, GetAllPersonHandler getAllPersonHandler, AuthenticationService authenticationService) {
+    public PersonController(CreatePersonHandler createPersonHandler, DeletePersonHandler deletePersonHandler, GetPersonHandler getPersonHandler, UpdatePersonHandler updatePersonHandler, GetAllPersonHandler getAllPersonHandler, GetNetworkHandler getNetworkHandler, AuthenticationService authenticationService) {
         this.createPersonHandler = createPersonHandler;
         this.deletePersonHandler = deletePersonHandler;
         this.getPersonHandler = getPersonHandler;
         this.updatePersonHandler = updatePersonHandler;
         this.getAllPersonHandler = getAllPersonHandler;
+        this.getNetworkHandler = getNetworkHandler;
         this.authenticationService = authenticationService;
     }
 
@@ -82,6 +84,15 @@ public class PersonController {
             @RequestParam(defaultValue = "10") int size
     ) {
         var responses = getAllPersonHandler.handle(page, size);
+
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/me/network")
+    public ResponseEntity<List<PersonResponse>> getMyNetwork() {
+        var authenticatedPersonId = authenticationService.getAuthenticatedPersonId();
+
+        var responses = getNetworkHandler.handle(authenticatedPersonId);
 
         return ResponseEntity.ok(responses);
     }
