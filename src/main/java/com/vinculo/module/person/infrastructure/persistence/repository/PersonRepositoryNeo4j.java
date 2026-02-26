@@ -20,22 +20,31 @@ public interface PersonRepositoryNeo4j extends Neo4jRepository<Person, String> {
 
     @Override
     @Query("""
-        MATCH (p:Person) WHERE p.id = $id
+        MATCH (p:Person) WHERE elementId(p) = $id
         OPTIONAL MATCH (p)-[r]-()
         DETACH DELETE p, r
     """)
     void deleteById(String id);
 
-    @Query("MATCH (p1:Person {id: $authId})-[:CONNECTED_WITH]-(p2:Person {id: $targetId}) RETURN count(p2) > 0")
+    @Query("""
+        MATCH (p1:Person)-[:CONNECTED_WITH]-(p2:Person)
+        WHERE elementId(p1) = $authId AND elementId(p2) = $targetId
+        RETURN count(p2) > 0
+        """)
     boolean isConnected(String authId, String targetId);
 
     @Query("""
-            MATCH (p1:Person {id: $personId})-[r:CONNECTED_WITH]->(p2:Person)
+            MATCH (p1:Person)-[r:CONNECTED_WITH]->(p2:Person)
+            WHERE elementId(p1) = $personId
             RETURN r, p1, p2
             """)
     List<Connection> findAllConnectionsByPersonId(@Param("personId") String personId);
 
-    @Query("MATCH (a:Person {id: $id1})-[:CONNECTED_WITH]->(b:Person {id: $id2}) RETURN COUNT(a) > 0")
+    @Query("""
+        MATCH (a:Person)-[:CONNECTED_WITH]-(b:Person)
+        WHERE elementId(a) = $id1 AND elementId(b) = $id2
+        RETURN COUNT(a) > 0
+        """)
     boolean existsConnectionBetween(
             @Param("id1") String personId,
             @Param("id2") String targetPersonId

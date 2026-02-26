@@ -14,21 +14,32 @@ import java.util.List;
 public interface PostRepositoryNeo4j extends Neo4jRepository<Post, String> {
 
     @Query(value = """
-            MATCH (me:Person {id: $personId})-[rel:CONNECTED_WITH]->(friend:Person)-[:POSTED]->(post:Post)
-            RETURN post, friend
-            ORDER BY rel.weight DESC, post.createdAt DESC
+            MATCH (me:Person)-[conn:CONNECTED_WITH]-(friend:Person)
+            WHERE elementId(me) = $personId AND elementId(friend) <> $personId
+            MATCH (friend)-[posted:POSTED]->(post:Post)
+            RETURN DISTINCT post, posted, friend
+            ORDER BY post.createdAt DESC
             SKIP $skip LIMIT $limit
             """,
             countQuery = """
-                MATCH (me:Person {id: $personId})-[:CONNECTED_WITH]->(friend:Person)-[:POSTED]->(post:Post)
-                RETURN count(post)
+                MATCH (me:Person)-[:CONNECTED_WITH]-(friend:Person)
+                WHERE elementId(me) = $personId AND elementId(friend) <> $personId
+                MATCH (friend)-[:POSTED]->(post:Post)
+                RETURN count(DISTINCT post)
             """)
     Page<Post> findNetworkFeed(@Param("personId") String personId, Pageable pageable);
 
     @Query(value = """
-            MATCH (a:Person {id: $authorId})-[rel:POSTED]->(p:Post)
+            MATCH (a:Person)-[rel:POSTED]->(p:Post)
+            WHERE elementId(a) = $authorId
             RETURN p, rel, a
-            """, countQuery = "MATCH (a:Person {id: $authorId})-[:POSTED]->(p:Post) RETURN count(p)")
+            ORDER BY p.createdAt DESC
+            SKIP $skip LIMIT $limit
+            """, countQuery = """
+                MATCH (a:Person)-[:POSTED]->(p:Post)
+                WHERE elementId(a) = $authorId
+                RETURN count(p)
+            """)
     Page<Post> findAllByAuthorId(@Param("authorId") String authorId, Pageable pageable);
 
 }
