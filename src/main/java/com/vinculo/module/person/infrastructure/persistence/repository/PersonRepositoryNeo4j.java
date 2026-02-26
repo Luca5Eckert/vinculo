@@ -28,4 +28,7 @@ public interface PersonRepositoryNeo4j extends Neo4jRepository<Person, Long> {
         DETACH DELETE p, r
     """)
     void deleteById(Long id);
+
+    @Query("MATCH (p1:Person {id: $authId})-[:CONNECTED_WITH]-(p2:Person {id: $targetId}) RETURN count(p2) > 0")
+    boolean isConnected(Long authId, Long personId);
 }

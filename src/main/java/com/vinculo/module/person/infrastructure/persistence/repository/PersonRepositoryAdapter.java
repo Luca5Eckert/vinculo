@@ -67,4 +67,9 @@ public class PersonRepositoryAdapter implements PersonRepository {
         return personRepositoryNeo4j.findAll(pageRequest);
     }
 
+    @Override
+    public boolean isConnected(Long authId, Long personId) {
+        return personRepositoryNeo4j.isConnected(authId, personId);
+    }
+
 }

@@ -1,6 +1,5 @@
 package com.vinculo.module.person.domain.use_case;
 
-import com.vinculo.module.connection.domain.model.Connection;
 import com.vinculo.module.person.domain.command.GetNetworkCommand;
 import com.vinculo.module.person.domain.exception.PersonException;
 import com.vinculo.module.person.domain.exception.PersonNotExistException;
@@ -20,30 +19,20 @@ public class GetNetworkUseCase {
     }
 
     public List<Person> execute(GetNetworkCommand command) {
-        Person networkPerson = personRepository.findById(command.personId())
+        Person targetPerson = personRepository.findById(command.personId())
                 .orElseThrow(PersonNotExistException::new);
 
-        verifyIfCanSeeNetwork(command.authenticatedPersonId(), networkPerson);
+        validateAccess(command.authenticatedPersonId(), targetPerson);
 
-        return networkPerson.getConnections().stream()
-                .map(Connection::getPerson)
-                .toList();
-
+        return targetPerson.getConnectedPeople();
     }
 
-    private void verifyIfCanSeeNetwork(Long authenticatedPersonId, Person networkPerson) {
-        if(authenticatedPersonId.equals(networkPerson.getId())) return;
+    private void validateAccess(Long authId, Person target) {
+        boolean isOwner = authId.equals(target.getId());
 
-        boolean isConnectedWith = networkPerson.getConnections().stream()
-                .anyMatch(connection -> isConnected(connection.getPerson(),authenticatedPersonId));
-
-        if(!isConnectedWith){
-            throw new PersonException("You don't have permission to see this person's network");
+        if (!isOwner && !personRepository.isConnected(authId, target.getId())) {
+            throw new PersonException("You don't have access to this person's network");
         }
-    }
-
-    private boolean isConnected(Person person, Long authenticatedPersonId) {
-        return person.getId().equals(authenticatedPersonId);
     }
 
 }

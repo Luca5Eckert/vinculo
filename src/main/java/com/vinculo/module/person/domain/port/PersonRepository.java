@@ -3,7 +3,6 @@ package com.vinculo.module.person.domain.port;
 import com.vinculo.module.person.domain.model.Person;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface PersonRepository {
@@ -25,4 +24,6 @@ public interface PersonRepository {
     boolean existsConnectionBetween(Long personId, Long connectedPersonId);
 
     Page<Person> findAll(int page, int size);
+
+    boolean isConnected(Long authId, Long personId);
 }
