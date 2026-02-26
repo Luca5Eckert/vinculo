@@ -23,17 +23,19 @@ public class PersonController {
     private final GetPersonHandler getPersonHandler;
     private final UpdatePersonHandler updatePersonHandler;
     private final GetAllPersonHandler getAllPersonHandler;
-    private final GetNetworkHandler getNetworkHandler;
+    private final GetMyNetworkHandler getMyNetworkHandler;
+    private final GetNetworkByPersonIdHandler getNetworkByPersonIdHandler;
 
     private final AuthenticationService authenticationService;
 
-    public PersonController(CreatePersonHandler createPersonHandler, DeletePersonHandler deletePersonHandler, GetPersonHandler getPersonHandler, UpdatePersonHandler updatePersonHandler, GetAllPersonHandler getAllPersonHandler, GetNetworkHandler getNetworkHandler, AuthenticationService authenticationService) {
+    public PersonController(CreatePersonHandler createPersonHandler, DeletePersonHandler deletePersonHandler, GetPersonHandler getPersonHandler, UpdatePersonHandler updatePersonHandler, GetAllPersonHandler getAllPersonHandler, GetMyNetworkHandler getMyNetworkHandler, GetNetworkByPersonIdHandler getNetworkByPersonIdHandler, AuthenticationService authenticationService) {
         this.createPersonHandler = createPersonHandler;
         this.deletePersonHandler = deletePersonHandler;
         this.getPersonHandler = getPersonHandler;
         this.updatePersonHandler = updatePersonHandler;
         this.getAllPersonHandler = getAllPersonHandler;
-        this.getNetworkHandler = getNetworkHandler;
+        this.getMyNetworkHandler = getMyNetworkHandler;
+        this.getNetworkByPersonIdHandler = getNetworkByPersonIdHandler;
         this.authenticationService = authenticationService;
     }
 
@@ -92,7 +94,16 @@ public class PersonController {
     public ResponseEntity<List<PersonResponse>> getMyNetwork() {
         var authenticatedPersonId = authenticationService.getAuthenticatedPersonId();
 
-        var responses = getNetworkHandler.handle(authenticatedPersonId);
+        var responses = getMyNetworkHandler.handle(authenticatedPersonId);
+
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/{id}/network")
+    public ResponseEntity<List<PersonResponse>> getNetworkByPersonId(@PathVariable Long id) {
+        var authenticatedPersonId = authenticationService.getAuthenticatedPersonId();
+
+        var responses = getNetworkByPersonIdHandler.handle(authenticatedPersonId, id);
 
         return ResponseEntity.ok(responses);
     }
