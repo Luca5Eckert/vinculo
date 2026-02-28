@@ -50,24 +50,28 @@ public class GraphRepositoryAdapter implements GraphRepository {
         ));
 
         // Add connected people as nodes and create edges
-        person.getConnections().forEach(connection -> {
-            Person connectedPerson = connection.getPerson();
-            
-            // Add connected person as a node
-            nodes.add(new Node(
-                connectedPerson.getId(),
-                connectedPerson.getName(),
-                connectedPerson.getUsername()
-            ));
+        if (person.getConnections() != null) {
+            person.getConnections().forEach(connection -> {
+                Person connectedPerson = connection.getPerson();
+                
+                if (connectedPerson != null) {
+                    // Add connected person as a node
+                    nodes.add(new Node(
+                        connectedPerson.getId(),
+                        connectedPerson.getName(),
+                        connectedPerson.getUsername()
+                    ));
 
-            // Add edge from main person to connected person
-            edges.add(new Edge(
-                person.getId(),
-                connectedPerson.getId(),
-                connection.getType().name(),
-                connection.getWeight()
-            ));
-        });
+                    // Add edge from main person to connected person
+                    edges.add(new Edge(
+                        person.getId(),
+                        connectedPerson.getId(),
+                        connection.getType().name(),
+                        connection.getWeight()
+                    ));
+                }
+            });
+        }
 
         return new GraphNetwork(nodes, edges);
     }
