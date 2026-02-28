@@ -7,6 +7,13 @@ import com.vinculo.module.request_connection.application.handler.GetMyRequestCon
 import com.vinculo.module.request_connection.application.handler.SendRequestConnectionHandler;
 import com.vinculo.module.request_connection.application.handler.UpdateStatusRequestConnectionHandler;
 import com.vinculo.share.service.AuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/request-connections")
+@Tag(name = "Request Connection", description = "Connection request management APIs")
 public class RequestConnectionController {
 
     private final SendRequestConnectionHandler sendRequestConnectionHandler;
@@ -32,8 +40,14 @@ public class RequestConnectionController {
     }
 
     @PostMapping("/{personTargetId}")
+    @Operation(summary = "Send connection request", description = "Sends a connection request to another person")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Connection request sent successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Target person not found", content = @Content)
+    })
     public ResponseEntity<Void> send(
-            @PathVariable(value = "personTargetId") String personTargetId,
+            @Parameter(description = "ID of the person to send connection request to") @PathVariable(value = "personTargetId") String personTargetId,
             @Validated @RequestBody SendRequestConnectionRequest request
     ) {
         String personRequesterId = authenticationService.getAuthenticatedPersonId();
@@ -46,8 +60,14 @@ public class RequestConnectionController {
     }
 
     @PutMapping("/{requestConnectionId}")
+    @Operation(summary = "Update connection request status", description = "Updates the status of a connection request (accept/reject)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Connection request status updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Connection request not found", content = @Content)
+    })
     public ResponseEntity<Void> update(
-            @PathVariable(value = "requestConnectionId") String requestConnectionId,
+            @Parameter(description = "ID of the connection request to update") @PathVariable(value = "requestConnectionId") String requestConnectionId,
             @Validated @RequestBody UpdateStatusRequestConnectionRequest request
     ) {
         String personTargetId = authenticationService.getAuthenticatedPersonId();
@@ -64,6 +84,11 @@ public class RequestConnectionController {
     }
 
     @GetMapping("/me")
+    @Operation(summary = "Get my connection requests", description = "Retrieves all connection requests for the authenticated user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Connection requests retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RequestConnectionResponse.class)))
+    })
     public ResponseEntity<List<RequestConnectionResponse>> getMyRequestConnections() {
         String personId = authenticationService.getAuthenticatedPersonId();
 
