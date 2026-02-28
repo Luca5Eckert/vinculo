@@ -6,6 +6,7 @@ import com.vinculo.module.graph.domain.model.Node;
 import com.vinculo.module.graph.domain.port.GraphRepository;
 import com.vinculo.module.graph.domain.query.GetGraphNetworkQuery;
 import com.vinculo.module.person.domain.model.Person;
+import com.vinculo.module.person.infrastructure.persistence.repository.PersonRepositoryNeo4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -15,10 +16,10 @@ import java.util.Optional;
 @Repository
 public class GraphRepositoryAdapter implements GraphRepository {
 
-    private final GraphRepositoryNeo4j graphRepositoryNeo4j;
+    private final PersonRepositoryNeo4j personRepositoryNeo4j;
 
-    public GraphRepositoryAdapter(GraphRepositoryNeo4j graphRepositoryNeo4j) {
-        this.graphRepositoryNeo4j = graphRepositoryNeo4j;
+    public GraphRepositoryAdapter(PersonRepositoryNeo4j personRepositoryNeo4j) {
+        this.personRepositoryNeo4j = personRepositoryNeo4j;
     }
 
     @Override
@@ -32,7 +33,7 @@ public class GraphRepositoryAdapter implements GraphRepository {
     }
 
     private GraphNetwork buildGraphNetwork(String userId) {
-        Optional<Person> personOpt = graphRepositoryNeo4j.findById(userId);
+        Optional<Person> personOpt = personRepositoryNeo4j.findById(userId);
         
         if (personOpt.isEmpty()) {
             return new GraphNetwork(List.of(), List.of());
