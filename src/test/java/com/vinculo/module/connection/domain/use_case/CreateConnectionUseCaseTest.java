@@ -8,7 +8,6 @@ import com.vinculo.module.connection.domain.port.ConnectionRepository;
 import com.vinculo.module.person.domain.exception.PersonNotExistException;
 import com.vinculo.module.person.domain.model.Person;
 import com.vinculo.module.person.domain.port.PersonRepository;
-import com.vinculo.module.connection.domain.model.TypeConnection;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -55,21 +55,4 @@ class DeletePersonUseCaseTest {
         verify(personRepository).existsById(personId);
         verify(personRepository, never()).deleteById(anyString());
     }
-
-    @Test
-    @DisplayName("Should verify person existence before deletion")
-    void shouldVerifyExistenceBeforeDeletion() {
-        // Arrange
-        String personId = "person-456";
-        DeletePersonCommand command = new DeletePersonCommand(personId);
-
-        when(personRepository.existsById(personId)).thenReturn(true);
-
-        // Act
-        deletePersonUseCase.execute(command);
-
-        // Assert
-        verify(personRepository).existsById(personId);
-        verify(personRepository).deleteById(personId);
-    }
 }

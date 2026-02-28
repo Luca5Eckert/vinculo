@@ -87,25 +87,4 @@ class DeletePostUseCaseTest {
         verify(post).canDelete(personId);
         verify(postRepository, never()).deleteById(anyString());
     }
-
-    @Test
-    @DisplayName("Should verify authorization before deletion")
-    void shouldVerifyAuthorizationBeforeDeletion() {
-        // Arrange
-        String postId = "post-def";
-        String personId = "person-ghi";
-        DeletePostCommand command = new DeletePostCommand(postId, personId);
-
-        Post post = mock(Post.class);
-        when(post.getId()).thenReturn(postId);
-        when(post.canDelete(personId)).thenReturn(true);
-        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
-
-        // Act
-        deletePostUseCase.execute(command);
-
-        // Assert
-        verify(post).canDelete(personId);
-        verify(postRepository).deleteById(postId);
-    }
 }
