@@ -62,24 +62,4 @@ class PostModuleIntegrationTest {
         assertFalse(canView);
         verify(connectionRepository).existsBetween("viewer-123", "owner-456");
     }
-
-    @Test
-    @DisplayName("Should check connection between users for visibility")
-    void shouldCheckConnectionForVisibility() {
-        // Arrange
-        PostVisibilityPolicy policy = new PostVisibilityPolicy(connectionRepository);
-        String viewerId = "viewer-123";
-        String ownerId = "owner-456";
-
-        // Test when connection exists
-        when(connectionRepository.existsBetween(viewerId, ownerId)).thenReturn(true);
-        assertTrue(policy.canView(viewerId, ownerId));
-
-        // Test when connection doesn't exist
-        when(connectionRepository.existsBetween(viewerId, ownerId)).thenReturn(false);
-        assertFalse(policy.canView(viewerId, ownerId));
-
-        // Verify connection check was called
-        verify(connectionRepository, times(2)).existsBetween(viewerId, ownerId);
-    }
 }

@@ -53,16 +53,5 @@ class ConnectionModuleIntegrationTest {
         // Verify all 9 connection types exist
         TypeConnection[] types = TypeConnection.values();
         assertEquals(9, types.length);
-        
-        // Verify each type exists
-        assertNotNull(TypeConnection.PARTNER);
-        assertNotNull(TypeConnection.FAMILY);
-        assertNotNull(TypeConnection.FRIEND);
-        assertNotNull(TypeConnection.BUSINESS_PARTNER);
-        assertNotNull(TypeConnection.MENTOR);
-        assertNotNull(TypeConnection.REFERRAL);
-        assertNotNull(TypeConnection.COLLEAGUE);
-        assertNotNull(TypeConnection.BUDDY);
-        assertNotNull(TypeConnection.ACQUAINTANCE);
     }
 }

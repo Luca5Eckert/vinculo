@@ -10,7 +10,7 @@ This document outlines the comprehensive test pyramid implemented for the Vincul
         /  \      E2E Tests (1 test)
        /____\     - Application context loads
       /      \    
-     / Integration Tests (14 tests)
+     / Integration Tests (13 tests)
     /___________\  - Module integration tests
    /             \ - Policy tests
   /   Unit Tests  \ 
@@ -43,13 +43,13 @@ This document outlines the comprehensive test pyramid implemented for the Vincul
 **Request Connection Module (5 tests)**
 - `SendRequestConnectionUseCaseTest` (5 tests) - Successful sending, self-connection prevention, requester validation, duplicate prevention, rejected request handling
 
-#### 2. Integration Tests (Middle Layer) - 14 Tests ✅
+#### 2. Integration Tests (Middle Layer) - 13 Tests ✅
 
 **Auth Module Integration (4 tests)**
 - `AuthModuleIntegrationTest` - End-to-end registration flow, login with JWT, duplicate email prevention, phone number validation
 
-**Post Module Integration (4 tests)**
-- `PostModuleIntegrationTest` - Own posts visibility policy, connected users viewing posts, non-connected users blocking, connection checking
+**Post Module Integration (3 tests)**
+- `PostModuleIntegrationTest` - Own posts visibility policy, connected users viewing posts, non-connected users blocking
 
 **Connection Module Integration (6 tests)**
 - `ConnectionModuleIntegrationTest` - Connection weights for tiers 1-5, all 9 connection types verification
@@ -61,10 +61,10 @@ This document outlines the comprehensive test pyramid implemented for the Vincul
 
 | Metric | Value |
 |--------|-------|
-| **Total Tests** | 49 |
-| **Passing Tests** | 49 ✅ |
-| **Unit Tests** | 34 (69%) |
-| **Integration Tests** | 14 (29%) |
+| **Total Tests** | 48 |
+| **Passing Tests** | 48 ✅ |
+| **Unit Tests** | 34 (71%) |
+| **Integration Tests** | 13 (27%) |
 | **E2E Tests** | 1 (2%) |
 | **Test Execution Time** | ~8 seconds |
 
@@ -94,7 +94,7 @@ This document outlines the comprehensive test pyramid implemented for the Vincul
 
 The implemented test pyramid provides:
 - ✅ **Solid foundation** with 34 unit tests
-- ✅ **Integration coverage** with 14 module integration tests
+- ✅ **Integration coverage** with 13 module integration tests
 - ✅ **Fast feedback** loop (8-second execution)
 - ✅ **High confidence** in core business logic
 - ✅ **Maintainable** test suite with clear patterns
