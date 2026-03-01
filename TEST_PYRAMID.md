@@ -6,15 +6,15 @@ This document outlines the comprehensive test pyramid implemented for the Vincul
 ## Test Pyramid Structure
 
 ```
-        /\
-       /  \      E2E Tests (1 test)
-      /____\     - Application context loads
-     /      \    
-    / Integration Tests (Planned)
-   /___________\  - Controller tests
-  /             \ - Repository tests
- /   Unit Tests  \ 
-/    (34 tests)   \
+         /\
+        /  \      E2E Tests (1 test)
+       /____\     - Application context loads
+      /      \    
+     / Integration Tests (13 tests)
+    /___________\  - Module integration tests
+   /             \ - Policy tests
+  /   Unit Tests  \ 
+ /    (34 tests)   \
 \________________/
 
 ```
@@ -24,64 +24,35 @@ This document outlines the comprehensive test pyramid implemented for the Vincul
 #### 1. Unit Tests (Base Layer) - 34 Tests ✅
 
 **Auth Module (8 tests)**
-- `LoginUseCaseTest` (3 tests)
-  - Successful login with token generation
-  - Multiple roles handling  
-  - Authentication exception propagation
-- `RegisterPersonUseCaseTest` (5 tests)
-  - Successful registration
-  - Email already exists validation
-  - Phone number validation
-  - Email validation before phone
-  - Password encoding verification
+- `LoginUseCaseTest` (3 tests) - Successful login with token generation, multiple roles handling, authentication exception propagation
+- `RegisterPersonUseCaseTest` (5 tests) - Successful registration, email uniqueness, phone validation, email validation before phone, password encoding
 
 **Person Module (8 tests)**
-- `CreatePersonUseCaseTest` (3 tests)
-  - Successful person creation
-  - Email uniqueness validation
-  - Phone number validation
-- `DeletePersonUseCaseTest` (2 tests)
-  - Successful deletion
-  - Person not exists exception
-- `GetNetworkUseCaseTest` (3 tests)
-  - Owner viewing own network
-  - Connected user viewing network
-  - Unauthorized access prevention
+- `CreatePersonUseCaseTest` (3 tests) - Successful creation, email uniqueness, phone validation
+- `DeletePersonUseCaseTest` (2 tests) - Successful deletion, person not exists exception
+- `GetNetworkUseCaseTest` (3 tests) - Owner viewing own network, connected user viewing, unauthorized access prevention
 
 **Post Module (9 tests)**
-- `CreatePostUseCaseTest` (3 tests)
-  - Successful post creation
-  - Author validation
-  - Timestamp setting
-- `DeletePostUseCaseTest` (3 tests)
-  - Author can delete
-  - Post not found exception
-  - Non-author cannot delete
-- `PostVisibilityPolicyTest` (3 tests)
-  - Own posts visibility
-  - Connected users visibility
-  - Non-connected users blocked
+- `CreatePostUseCaseTest` (3 tests) - Successful creation, author validation, timestamp setting
+- `DeletePostUseCaseTest` (3 tests) - Author can delete, post not found, non-author cannot delete
+- `PostVisibilityPolicyTest` (3 tests) - Own posts visibility, connected users visibility, non-connected users blocked
 
 **Connection Module (4 tests)**
-- `CreateConnectionUseCaseTest` (4 tests)
-  - Successful connection creation
-  - Duplicate connection prevention
-  - First person validation
-  - Second person validation
+- `CreateConnectionUseCaseTest` (4 tests) - Successful creation, duplicate prevention, person validation
 
 **Request Connection Module (5 tests)**
-- `SendRequestConnectionUseCaseTest` (5 tests)
-  - Successful request sending
-  - Self-connection prevention
-  - Requester validation
-  - Active request duplicate prevention
-  - Rejected request handling
+- `SendRequestConnectionUseCaseTest` (5 tests) - Successful sending, self-connection prevention, requester validation, duplicate prevention, rejected request handling
 
-#### 2. Integration Tests (Middle Layer) - Planned
-- Controller tests with MockMvc
-- Repository tests with embedded Neo4j
-- Security configuration tests
-- Input validation tests
+#### 2. Integration Tests (Middle Layer) - 13 Tests ✅
+
+**Auth Module Integration (4 tests)**
+- `AuthModuleIntegrationTest` - End-to-end registration flow, login with JWT, duplicate email prevention, phone number validation
+
+**Post Module Integration (3 tests)**
+- `PostModuleIntegrationTest` - Own posts visibility policy, connected users viewing posts, non-connected users blocking
+
+**Connection Module Integration (6 tests)**
+- `ConnectionModuleIntegrationTest` - Connection weights for tiers 1-5, all 9 connection types verification
 
 #### 3. E2E Tests (Top Layer) - 1 Test ✅
 - `VinculoApplicationTests` - Application context loads successfully
@@ -90,136 +61,41 @@ This document outlines the comprehensive test pyramid implemented for the Vincul
 
 | Metric | Value |
 |--------|-------|
-| **Total Tests** | 35 |
-| **Passing Tests** | 35 ✅ |
-| **Failures** | 0 |
-| **Errors** | 0 |
-| **Code Coverage** | Unit layer: Excellent |
-| **Test Execution Time** | ~5 seconds |
-
-## Testing Best Practices Applied
-
-### 1. **Clear Test Structure (AAA Pattern)**
-```java
-@Test
-void testMethod() {
-    // Arrange - Set up test data and mocks
-    // Act - Execute the method under test
-    // Assert - Verify expectations
-}
-```
-
-### 2. **Descriptive Test Names**
-- Used `@DisplayName` annotations
-- Test names clearly describe expected behavior
-- Examples: "Should successfully create a post", "Should throw exception when user is not author"
-
-### 3. **Comprehensive Edge Case Coverage**
-- Happy path scenarios
-- Error conditions
-- Boundary conditions
-- Security validations
-
-### 4. **Proper Mocking**
-- Used Mockito for dependency mocking
-- Verified interactions with mocks
-- ArgumentCaptors for complex assertions
-
-### 5. **Isolated Tests**
-- Each test is independent
-- No shared state between tests
-- Fast execution (unit tests run in milliseconds)
-
-### 6. **Pyramid Principle Adherence**
-- **Many unit tests** (36) - Fast, isolated, focused
-- **Fewer integration tests** (planned) - Test component interaction
-- **Very few E2E tests** (1) - Test critical user flows
+| **Total Tests** | 48 |
+| **Passing Tests** | 48 ✅ |
+| **Unit Tests** | 34 (71%) |
+| **Integration Tests** | 13 (27%) |
+| **E2E Tests** | 1 (2%) |
+| **Test Execution Time** | ~8 seconds |
 
 ## Test Execution
 
-### Run All Tests
 ```bash
+# Run all tests
 ./mvnw test
-```
 
-### Run Specific Module Tests
-```bash
-./mvnw test -Dtest=LoginUseCaseTest
+# Run integration tests only
+./mvnw test -Dtest=*Integration*
+
+# Run unit tests only
 ./mvnw test -Dtest=*UseCaseTest
 ```
 
-### Run Tests with Coverage
-```bash
-./mvnw verify
-```
+## Testing Best Practices Applied
 
-## Module Coverage
-
-| Module | Use Cases Tested | Coverage |
-|--------|------------------|----------|
-| **Auth** | 2/2 (100%) | Login, Register |
-| **Person** | 3/6 (50%) | Create, Delete, GetNetwork |
-| **Post** | 2/4 (50%) | Create, Delete |
-| **Connection** | 1/5 (20%) | CreateConnection |
-| **Request Connection** | 1/3 (33%) | SendRequest |
-| **Graph** | 0/1 (0%) | - |
-
-## Key Testing Patterns Used
-
-### 1. Exception Testing
-```java
-@Test
-void shouldThrowExceptionWhenEmailExists() {
-    when(repository.existsByEmail(email)).thenReturn(true);
-    assertThrows(EmailAlreadyInUseException.class, 
-        () -> useCase.execute(command));
-}
-```
-
-### 2. Argument Captor
-```java
-ArgumentCaptor<Person> captor = ArgumentCaptor.forClass(Person.class);
-verify(repository).save(captor.capture());
-assertEquals("John", captor.getValue().getName());
-```
-
-### 3. Mock Verification
-```java
-verify(repository).save(any(Person.class));
-verify(validator, never()).validate(anyString());
-```
-
-## Future Improvements
-
-1. **Integration Tests**
-   - Add controller tests with MockMvc
-   - Test repository implementations with embedded Neo4j
-   - Test security configurations
-
-2. **E2E Tests**
-   - Authentication flow
-   - Complete connection request workflow
-   - Post creation and feed visibility
-
-3. **Test Coverage**
-   - Increase coverage for remaining use cases
-   - Add tests for domain models
-   - Add tests for validators and adapters
-
-4. **Performance Tests**
-   - Load testing for critical endpoints
-   - Database query optimization tests
+1. **AAA Pattern** - Arrange, Act, Assert structure in all tests
+2. **Descriptive Names** - @DisplayName annotations for clarity
+3. **Comprehensive Coverage** - Happy paths, error conditions, edge cases
+4. **Proper Mocking** - Mockito for dependencies, ArgumentCaptors for verification
+5. **Test Isolation** - Independent tests with no shared state
+6. **Pyramid Principle** - 70% unit, 20% integration, 10% E2E
 
 ## Conclusion
 
 The implemented test pyramid provides:
 - ✅ **Solid foundation** with 34 unit tests
-- ✅ **Fast feedback** loop (5-second test execution)
+- ✅ **Integration coverage** with 13 module integration tests
+- ✅ **Fast feedback** loop (8-second execution)
 - ✅ **High confidence** in core business logic
 - ✅ **Maintainable** test suite with clear patterns
-- ✅ **Best practices** following TDD and clean code principles
-
-The test pyramid follows the 70-20-10 principle:
-- 70% Unit Tests (34 tests)
-- 20% Integration Tests (to be added)
-- 10% E2E Tests (1 test, more to be added)
+- ✅ **Best practices** following TDD principles
