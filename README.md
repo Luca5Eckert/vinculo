@@ -463,9 +463,29 @@ Expected response: `401` (server is up and responding)
 
 ## 📚 API Documentation
 
-Base URL: `http://localhost:8080/v1`
+### Swagger/OpenAPI Documentation
+
+The API is fully documented using OpenAPI 3.0 (Swagger). Once the application is running, you can access the interactive documentation at:
+
+- **Swagger UI**: `http://localhost:8080/swagger-ui/index.html`
+- **OpenAPI JSON**: `http://localhost:8080/v3/api-docs`
+- **OpenAPI YAML**: `http://localhost:8080/v3/api-docs.yaml`
+
+The Swagger UI provides:
+- Interactive API testing
+- Complete endpoint documentation
+- Request/response schemas
+- Authentication support (Bearer token)
+
+To use authenticated endpoints in Swagger UI:
+1. Click the "Authorize" button
+2. Enter your JWT token in the format: `Bearer {your-token}`
+3. Click "Authorize" to save
+4. Test any endpoint directly from the browser
 
 ### Authentication Endpoints
+
+Base URL: `http://localhost:8080/v1`
 
 #### Register User
 ```http
