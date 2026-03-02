@@ -144,7 +144,7 @@ REJECTED → Request marked as rejected (no connection created)
 
 ## 🏗️ Architecture
 
-Vinculo implements **Clean Architecture** principles through **Hexagonal Architecture** (Ports and Adapters pattern) combined with **Domain-Driven Design (DDD)** modular organization. This architectural approach ensures:
+Vinculo implements **Clean Architecture** principles through **Hexagonal Architecture** (Ports and Adapters pattern) combined with **Domain-Driven Design (DDD)** modular organization. This architectural approach enables:
 
 - **Business Logic Independence**: Core domain remains framework-agnostic and testable
 - **Dependency Inversion**: All dependencies point inward toward the domain layer
@@ -494,8 +494,11 @@ NEO4J_URI=bolt://neo4j:7687
 # Application Configuration
 APP_PORT=8080
 
-# Security Configuration (IMPORTANT: Use a strong 256+ bit key in production)
-JWT_KEY=your_jwt_secret_key_minimum_256_bits_recommended_to_use_base64_encoded_random_bytes
+# Security Configuration
+# CRITICAL: Generate a strong random key for JWT signing
+# Generate with: openssl rand -base64 32
+# DO NOT use the placeholder below - generate your own key!
+JWT_KEY=your-base64-encoded-secret-key-here-generate-with-openssl-rand
 ```
 
 3. **Launch the application stack**:
@@ -571,7 +574,7 @@ curl -X POST http://localhost:8080/v1/auth/register \
     "name": "John Doe",
     "email": "john.doe@example.com",
     "password": "SecurePassword123!",
-    "phoneNumber": "+15555551234"
+    "phoneNumber": "+15555550100"
   }'
 ```
 
@@ -626,7 +629,7 @@ Content-Type: application/json
   "name": "John Doe",
   "email": "john.doe@example.com",
   "password": "SecurePassword123!",
-  "phoneNumber": "+15555551234"
+  "phoneNumber": "+15555550100"
 }
 ```
 
@@ -636,7 +639,7 @@ Content-Type: application/json
   "id": 1,
   "name": "John Doe",
   "email": "john.doe@example.com",
-  "phoneNumber": "+15555551234",
+  "phoneNumber": "+15555550100",
   "role": "NORMAL"
 }
 ```
@@ -683,7 +686,7 @@ Content-Type: application/json
 
 {
   "name": "John Updated Doe",
-  "phoneNumber": "+15555559999"
+  "phoneNumber": "+15555550199"
 }
 ```
 
