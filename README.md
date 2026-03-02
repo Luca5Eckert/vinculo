@@ -1,10 +1,11 @@
 # Vinculo
 
-> A graph-based social network platform for managing relationships using Neo4j
+> Enterprise-grade graph-based social network platform leveraging Neo4j for high-performance relationship management
 
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.2-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Neo4j](https://img.shields.io/badge/Neo4j-5.0-blue.svg)](https://neo4j.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## 📑 Table of Contents
 
@@ -27,77 +28,133 @@
 
 ## 🎯 Overview
 
-**Vinculo** (Portuguese for "bond" or "connection") is a social network platform built with Spring Boot and Neo4j graph database. The project demonstrates how to model social relationships using graph database technology, implementing features like connection requests, user management, and JWT-based authentication.
+**Vinculo** (Portuguese for "bond" or "connection") is a production-ready social networking platform architected using modern software engineering principles. Built on Spring Boot 4.0 and Neo4j 5, this application demonstrates professional implementation of Clean Architecture, Domain-Driven Design, and graph database technology for managing complex social relationships at scale.
 
-### What is Vinculo?
+### Core Capabilities
 
-Vinculo allows users to:
-- Create and manage personal profiles
-- Send and receive connection requests
-- Build a network of categorized connections (friends, colleagues, family, etc.)
-- Publish and view posts on their feed and on other users' profiles
-- Manage relationships stored natively in a graph database
+Vinculo provides a complete social networking solution with:
+- **User Profile Management**: Full CRUD operations for user accounts with role-based access control
+- **Connection System**: Bidirectional relationship management with nine distinct connection types and weighted importance
+- **Request Workflow**: State-managed connection request lifecycle (pending, accepted, rejected)
+- **Content Publishing**: User-generated posts with visibility controls and feed aggregation
+- **Network Visualization**: Interactive graph visualization of social networks and connections
+- **Secure Authentication**: Stateless JWT-based authentication with BCrypt password encryption
 
-### Why Graph Database?
+### Technical Motivation
 
-Traditional relational databases use JOIN operations to query relationships, which becomes inefficient for social networks. Neo4j stores relationships as first-class citizens, making queries like "find all my connections" or "find connections of my connections" extremely fast, regardless of network size.
+Traditional relational databases require expensive JOIN operations to traverse relationships, resulting in performance degradation as social graphs grow. Neo4j's native graph storage model treats relationships as first-class citizens, enabling:
+- **Constant-time relationship traversals** regardless of network size
+- **Natural modeling** of complex interconnected data
+- **Efficient pattern matching** for social network queries
+- **Real-time graph analytics** without performance penalties
+
+This architecture makes Vinculo capable of scaling to millions of users while maintaining sub-millisecond query performance for connection-based operations.
 
 ## ✨ Features
 
 ### Authentication & Authorization
-- User registration and login
-- JWT-based authentication
-- Role-based access control (ADMIN, NORMAL)
-- Secure password hashing with BCrypt
+- **User Registration & Login**: Secure account creation with comprehensive validation
+- **JWT Authentication**: Stateless token-based authentication with configurable expiration
+- **Role-Based Access Control (RBAC)**: Granular permissions with ADMIN and NORMAL roles
+- **Password Security**: Industry-standard BCrypt hashing with automatic salt generation
+- **Method-Level Security**: Spring Security annotations for fine-grained authorization
 
-### User Management
-- Create and update user profiles
-- Email and phone number validation
-- Admin capabilities for user management
-- Paginated user listing
+### User Profile Management
+- **CRUD Operations**: Complete lifecycle management for user profiles
+- **Data Validation**: Email format validation and international phone number verification (E.164)
+- **Administrative Controls**: Admin-only operations for system management
+- **Pagination Support**: Efficient data retrieval with configurable page size and offset
 
-### Connection System
-- Send connection requests to other users
-- Accept or reject connection requests
-- View your connections
-- 9 connection types: PARTNER, FAMILY, FRIEND, BUSINESS_PARTNER, MENTOR, REFERRAL, COLLEAGUE, BUDDY, ACQUAINTANCE
-- Weighted relationships (tier 1-5 based on connection type)
-- Bidirectional connections (when a request is accepted, both users are connected)
+### Connection Management System
+- **Connection Requests**: Initiate connections with other users through formal request workflow
+- **Request Lifecycle**: State-managed workflow (PENDING → ACCEPTED/REJECTED)
+- **Nine Connection Categories**:
+  - **Tier 1** (Weight 1): PARTNER, FAMILY
+  - **Tier 2** (Weight 2): FRIEND, BUSINESS_PARTNER
+  - **Tier 3** (Weight 3): MENTOR, REFERRAL
+  - **Tier 4** (Weight 4): COLLEAGUE, BUDDY
+  - **Tier 5** (Weight 5): ACQUAINTANCE
+- **Bidirectional Relationships**: Symmetric connection graph when requests are accepted
+- **Weighted Importance**: Relationship strength indicators for network analysis
 
-### Posts
-- Create text posts visible to other users
-- View your own feed (posts from all connections)
-- Browse posts by a specific user's profile
-- Delete your own posts
-- Paginated listing with configurable skip/limit
+### Content Publishing
+- **Post Creation**: User-generated text content with timestamp tracking
+- **Personal Feed**: Aggregated view of posts from connected users
+- **Profile Posts**: Browse content by specific user
+- **Access Control**: Users can only delete their own content
+- **Pagination**: Efficient content loading with skip/limit parameters
 
-### Connection Request Workflow
-1. User A sends a connection request to User B (status: PENDING)
-2. User B can view incoming requests
-3. User B accepts or rejects the request
-4. If accepted, a bidirectional CONNECTED_WITH relationship is created
-5. If rejected, the request is marked as REJECTED
+### Network Visualization
+- **Personal Network Graph**: Visual representation of your social connections
+- **Any User Network**: View the network structure of any user in the system
+- **Graph Data Export**: Nodes and edges in structured format for visualization libraries
+- **Real-time Accuracy**: Direct queries against Neo4j graph for current network state
+
+### Connection Request State Machine
+```
+PENDING → User sends request
+    ↓
+ACCEPTED → Bidirectional CONNECTED_WITH relationship created (both users linked)
+    ↓
+    Active Connection
+    
+PENDING → User sends request
+    ↓
+REJECTED → Request marked as rejected (no connection created)
+```
 
 ## 🛠️ Technology Stack
 
-- **Framework**: Spring Boot 4.0.2
-- **Language**: Java 21
-- **Database**: Neo4j 5 (Graph Database)
-- **Security**: Spring Security with JWT
-- **Build Tool**: Maven
-- **Authentication**: JWT with HMAC-SHA256
-- **Password Encryption**: BCrypt
-- **Validation**: Jakarta Bean Validation
-- **Phone Validation**: libphonenumber (Google)
-- **Containerization**: Docker & Docker Compose
+### Core Framework & Runtime
+- **Spring Boot 4.0.2**: Enterprise application framework with auto-configuration
+- **Java 21**: Latest LTS version with virtual threads and pattern matching
+- **Maven**: Dependency management and build automation
+
+### Database & Persistence
+- **Neo4j 5**: Native graph database for relationship-centric data
+- **Spring Data Neo4j**: Object-graph mapping and repository abstraction
+- **Cypher**: Declarative graph query language
+
+### Security & Authentication
+- **Spring Security**: Comprehensive authentication and authorization framework
+- **JWT (JSON Web Tokens)**: Stateless authentication with HMAC-SHA256 signing
+- **BCrypt**: Adaptive password hashing algorithm
+- **OAuth2 Resource Server**: Standards-based token validation
+
+### API & Documentation
+- **SpringDoc OpenAPI 3.0**: Automated API documentation generation
+- **Swagger UI**: Interactive API exploration and testing interface
+- **Jakarta Bean Validation**: Declarative input validation
+
+### Infrastructure & Deployment
+- **Docker**: Application containerization
+- **Docker Compose**: Multi-container orchestration
+- **Dockerfile**: Multi-stage build optimization
+
+### Additional Libraries
+- **Lombok**: Boilerplate code reduction through annotations
+- **libphonenumber (Google)**: International phone number validation (E.164 format)
+- **JJWT**: Java JWT library for token creation and parsing
+
+### Development & Testing
+- **JUnit 5**: Unit testing framework
+- **Spring Boot Test**: Integration testing support
+- **Testcontainers**: Container-based integration tests (Neo4j)
+- **MockMvc**: HTTP endpoint testing
 
 ## 🏗️ Architecture
 
-Vinculo follows **Clean Architecture** principles with **Hexagonal Architecture** (Ports and Adapters) and **Domain-Driven Design (DDD)** modular organization.
+Vinculo implements **Clean Architecture** principles through **Hexagonal Architecture** (Ports and Adapters pattern) combined with **Domain-Driven Design (DDD)** modular organization. This architectural approach ensures:
+
+- **Business Logic Independence**: Core domain remains framework-agnostic and testable
+- **Dependency Inversion**: All dependencies point inward toward the domain layer
+- **Technology Flexibility**: Infrastructure components are pluggable and replaceable
+- **Testability**: Business logic can be tested without external dependencies
+- **Maintainability**: Clear separation of concerns enables independent evolution of layers
 
 ### Hexagonal Architecture Overview
 
-The application is structured in concentric layers where dependencies point inward, ensuring business logic remains independent of external concerns:
+The application follows a layered architecture where dependencies flow unidirectionally inward. External frameworks and infrastructure are isolated from business logic through well-defined interfaces (ports), allowing the core domain to remain independent and testable.
 
 ```mermaid
 graph TB
@@ -145,7 +202,7 @@ graph TB
 
 ### DDD Module Structure
 
-Each business capability is organized as an independent module following Domain-Driven Design principles:
+Each business capability is encapsulated as an independent, cohesive module following Domain-Driven Design principles. This modular approach enables:
 
 ```mermaid
 graph LR
@@ -193,60 +250,75 @@ graph LR
 
 ```
 src/main/java/com/vinculo/
-├── module/
-│   ├── auth/                    # Authentication module
-│   │   ├── application/         # Controllers, DTOs, handlers
-│   │   │   ├── controller/      # AuthController
-│   │   │   ├── dto/             # LoginRequest, RegisterPersonRequest
-│   │   │   └── handler/         # LoginHandler, RegisterPersonHandler
-│   │   ├── domain/              # Business logic (Use cases, commands, ports)
-│   │   │   ├── command/         # LoginCommand, RegisterPersonCommand
-│   │   │   ├── port/            # AuthenticatorPort, TokenProvider
-│   │   │   └── use_case/        # LoginUseCase, RegisterPersonUseCase
+├── module/                      # Business domain modules
+│   ├── auth/                    # Authentication & authorization
+│   │   ├── application/         # REST API layer (controllers, DTOs, handlers)
+│   │   │   ├── controller/      # HTTP endpoints (AuthController)
+│   │   │   ├── dto/             # Data transfer objects (LoginRequest, RegisterPersonRequest)
+│   │   │   └── handler/         # Request orchestration (LoginHandler, RegisterPersonHandler)
+│   │   ├── domain/              # Core business logic
+│   │   │   ├── command/         # Input contracts (LoginCommand, RegisterPersonCommand)
+│   │   │   ├── port/            # Abstractions (AuthenticatorPort, TokenProvider)
+│   │   │   └── use_case/        # Business operations (LoginUseCase, RegisterPersonUseCase)
 │   │   └── infrastructure/      # Technical implementations
-│   │       └── security/        # JWT, Spring Security adapters
+│   │       └── security/        # JWT provider, Spring Security adapters
 │   │
-│   ├── person/                  # Person management module
-│   │   ├── controller/          # REST controllers & handlers
-│   │   │   ├── controller/      # PersonController
+│   ├── person/                  # User profile management
+│   │   ├── controller/          # API layer
+│   │   │   ├── controller/      # PersonController (CRUD endpoints)
 │   │   │   ├── dto/             # Request/Response DTOs
-│   │   │   ├── handler/         # CRUD handlers
-│   │   │   └── mapper/          # DTO mappers
+│   │   │   ├── handler/         # Business operation handlers
+│   │   │   └── mapper/          # DTO ↔ Domain model mapping
 │   │   ├── domain/              # Person business logic
 │   │   │   ├── command/         # Person commands
-│   │   │   ├── exception/       # Domain exceptions
+│   │   │   ├── exception/       # Domain-specific exceptions
 │   │   │   ├── model/           # Person entity, RoleUser enum
-│   │   │   ├── port/            # Repository, Encoder, Validator ports
-│   │   │   └── use_case/        # CRUD use cases
-│   │   └── infrastructure/      # Technical implementations
-│   │       ├── encoder/         # BCrypt password encoder
-│   │       ├── persistence/     # Neo4j repository
-│   │       └── validator/       # Phone number validator
+│   │   │   ├── port/            # Repository, Encoder, Validator interfaces
+│   │   │   └── use_case/        # CRUD operations
+│   │   └── infrastructure/      # Technical adapters
+│   │       ├── encoder/         # BCrypt password encoder adapter
+│   │       ├── persistence/     # Neo4j repository implementation
+│   │       └── validator/       # Phone number validation adapter
 │   │
-│   ├── connection/              # Connection management module
-│   │   ├── application/         # API layer
-│   │   ├── domain/              # Connection business logic
-│   │   └── infrastructure/      # Neo4j persistence
+│   ├── connection/              # Connection management
+│   │   ├── application/         # REST API layer
+│   │   ├── domain/              # Connection business logic, type definitions
+│   │   └── infrastructure/      # Neo4j relationship persistence
 │   │
-│   ├── post/                    # Post module
+│   ├── request_connection/      # Connection request workflow
+│   │   ├── application/         # Request handling API
+│   │   ├── domain/              # State machine, workflow strategies
+│   │   └── infrastructure/      # Request persistence
+│   │
+│   ├── post/                    # Content publishing
 │   │   ├── application/         # API layer (controller, DTOs, handlers, mappers)
-│   │   ├── domain/              # Post business logic (use cases, model, ports)
-│   │   └── infrastructure/      # Neo4j persistence
+│   │   ├── domain/              # Post business logic (use cases, model, ports, policies)
+│   │   └── infrastructure/      # Neo4j post persistence
 │   │
-│   └── request_connection/      # Connection request module
-│       ├── application/         # Request handling
-│       ├── domain/              # Request workflow, strategies
-│       └── infrastructure/      # Request persistence
+│   └── graph/                   # Network visualization
+│       ├── application/         # Graph API endpoints
+│       │   ├── controller/      # GraphController
+│       │   ├── dto/             # GraphResponse, NodeResponse, EdgeResponse
+│       │   ├── handler/         # GetGraphNetworkHandler
+│       │   └── mapper/          # Graph data transformation
+│       ├── domain/              # Graph domain logic
+│       │   ├── model/           # GraphNetwork, Node, Edge
+│       │   ├── port/            # GraphRepository interface
+│       │   ├── query/           # GetGraphNetworkQuery
+│       │   └── use_case/        # GetGraphNetworkUseCase
+│       └── infrastructure/      # Cypher graph queries
+│           └── persistence/     # GraphRepositoryAdapter
 │
-└── share/                       # Shared cross-cutting concerns
+└── share/                       # Cross-cutting concerns
+    ├── config/                  # OpenAPI configuration
     ├── exception/               # Global exception handling
-    ├── security/                # Security configuration
-    └── service/                 # Authentication service
+    ├── security/                # Security configuration, filters
+    └── service/                 # Shared services (AuthenticationService)
 ```
 
 ### Request Flow: Controller → Handler → Use Case → Command
 
-Every API request follows a consistent flow through the layers, transforming DTOs into Commands:
+Every API request follows a standardized flow through architectural layers, ensuring consistent processing and clear separation of concerns:
 
 ```mermaid
 sequenceDiagram
@@ -379,16 +451,19 @@ graph TD
     Note3[Application coordinates<br/>but doesn't contain business logic]
 ```
 
-### Key Design Patterns
+### Key Architectural Patterns
 
-- **Hexagonal Architecture**: Clean separation between business logic and infrastructure
-- **Domain-Driven Design**: Modular organization by business capability
-- **Ports and Adapters**: Dependency inversion for testability and flexibility
-- **Command Pattern**: Encapsulating use case inputs with immutable records
-- **Strategy Pattern**: Handling different connection request statuses polymorphically
-- **Repository Pattern**: Abstraction over data access layer
-- **DTO Pattern**: Data transfer between external and domain layers
-- **Handler Pattern**: Transaction and orchestration management
+This application implements industry-standard design patterns to ensure maintainability, testability, and scalability:
+
+- **Hexagonal Architecture (Ports and Adapters)**: Isolates business logic from infrastructure concerns through well-defined interfaces
+- **Domain-Driven Design**: Organizes code by business capabilities rather than technical layers
+- **Command Pattern**: Encapsulates use case inputs as immutable records with domain-specific language
+- **Repository Pattern**: Abstracts data access behind interfaces, enabling technology-independent business logic
+- **Strategy Pattern**: Implements polymorphic behavior for connection request status handling
+- **DTO Pattern**: Separates external API contracts from internal domain models
+- **Handler Pattern**: Manages transaction boundaries and orchestrates cross-cutting concerns
+- **Dependency Injection**: Enables loose coupling and simplifies testing through constructor injection
+- **Mapper Pattern**: Translates between DTOs and domain entities while preserving layer boundaries
 
 ## 📋 Prerequisites
 
@@ -399,93 +474,148 @@ graph TD
 
 ## 🚀 Getting Started
 
-### Option 1: Using Docker Compose (Recommended)
+### Option 1: Docker Compose (Recommended for Production)
 
-1. Clone the repository:
+The containerized deployment provides a complete, isolated environment with both the application and Neo4j database.
+
+1. **Clone the repository**:
 ```bash
 git clone https://github.com/Luca5Eckert/vinculo.git
 cd vinculo
 ```
 
-2. Create a `.env` file in the project root:
+2. **Configure environment variables** in `.env`:
 ```env
+# Neo4j Database Configuration
 NEO4J_USER=neo4j
-NEO4J_PASSWORD=your_secure_password
+NEO4J_PASSWORD=your_secure_password_here
 NEO4J_URI=bolt://neo4j:7687
+
+# Application Configuration
 APP_PORT=8080
-JWT_KEY=your_jwt_secret_key_minimum_256_bits
+
+# Security Configuration (IMPORTANT: Use a strong 256+ bit key in production)
+JWT_KEY=your_jwt_secret_key_minimum_256_bits_recommended_to_use_base64_encoded_random_bytes
 ```
 
-3. Start the application:
+3. **Launch the application stack**:
 ```bash
 docker-compose up -d
 ```
 
-The application will be available at `http://localhost:8080`
-Neo4j Browser will be available at `http://localhost:7474`
+4. **Verify deployment**:
+- Application API: `http://localhost:8080`
+- Neo4j Browser: `http://localhost:7474`
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 
-### Option 2: Local Development
-
-1. Install and start Neo4j:
+5. **Monitor logs**:
 ```bash
-# Download from https://neo4j.com/download/
-# Or use Docker:
-docker run -d \
-  --name neo4j \
-  -p 7474:7474 -p 7687:7687 \
-  -e NEO4J_AUTH=neo4j/your_password \
-  neo4j:5-community
+docker-compose logs -f vinculo  # Application logs
+docker-compose logs -f neo4j    # Database logs
 ```
 
-2. Configure application:
+### Option 2: Local Development Environment
+
+For development and debugging, run the application directly on your local machine.
+
+1. **Install and configure Neo4j**:
+```bash
+# Option A: Using Docker
+docker run -d \
+  --name neo4j \
+  -p 7474:7474 \
+  -p 7687:7687 \
+  -e NEO4J_AUTH=neo4j/your_secure_password \
+  neo4j:5-community
+
+# Option B: Download and install from https://neo4j.com/download/
+```
+
+2. **Set environment variables**:
 ```bash
 export SPRING_NEO4J_URI=bolt://localhost:7687
 export SPRING_NEO4J_AUTHENTICATION_USERNAME=neo4j
-export SPRING_NEO4J_AUTHENTICATION_PASSWORD=your_password
+export SPRING_NEO4J_AUTHENTICATION_PASSWORD=your_secure_password
 export JWT_KEY=your_jwt_secret_key_minimum_256_bits
 ```
 
-3. Build and run:
+3. **Build the project**:
 ```bash
-./mvnw clean package
+./mvnw clean package -DskipTests
+```
+
+4. **Run the application**:
+```bash
 ./mvnw spring-boot:run
 ```
 
 ### Verify Installation
 
+Test the API health with a simple authentication attempt:
+
 ```bash
-curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/v1/auth/login \
+# Expected response: 401 Unauthorized (server is running and responding)
+curl -s -o /dev/null -w "%{http_code}\n" \
+  -X POST http://localhost:8080/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"wrong"}'
+  -d '{"email":"nonexistent@example.com","password":"test"}'
 ```
 
-Expected response: `401` (server is up and responding)
+### First Steps
+
+1. **Register a user account**:
+```bash
+curl -X POST http://localhost:8080/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "password": "SecurePassword123!",
+    "phoneNumber": "+15555551234"
+  }'
+```
+
+2. **Obtain authentication token**:
+```bash
+curl -X POST http://localhost:8080/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john.doe@example.com",
+    "password": "SecurePassword123!"
+  }'
+```
+
+3. **Use the token for authenticated requests**:
+```bash
+TOKEN="<your-jwt-token-here>"
+curl -X GET http://localhost:8080/v1/persons/me \
+  -H "Authorization: Bearer $TOKEN"
+```
 
 ## 📚 API Documentation
 
-### Swagger/OpenAPI Documentation
+### Interactive Documentation
 
-The API is fully documented using OpenAPI 3.0 (Swagger). Once the application is running, you can access the interactive documentation at:
+Vinculo provides comprehensive API documentation through OpenAPI 3.0 (Swagger). Access the interactive documentation once the application is running:
 
-- **Swagger UI**: `http://localhost:8080/swagger-ui/index.html`
-- **OpenAPI JSON**: `http://localhost:8080/v3/api-docs`
-- **OpenAPI YAML**: `http://localhost:8080/v3/api-docs.yaml`
+- **Swagger UI** (Interactive Testing): `http://localhost:8080/swagger-ui/index.html`
+- **OpenAPI Specification** (JSON): `http://localhost:8080/v3/api-docs`
+- **OpenAPI Specification** (YAML): `http://localhost:8080/v3/api-docs.yaml`
 
-The Swagger UI provides:
-- Interactive API testing
-- Complete endpoint documentation
-- Request/response schemas
-- Authentication support (Bearer token)
+#### Using Swagger UI for Authenticated Endpoints
 
-To use authenticated endpoints in Swagger UI:
-1. Click the "Authorize" button
+1. Click the **"Authorize"** button in the top-right corner
 2. Enter your JWT token in the format: `Bearer {your-token}`
-3. Click "Authorize" to save
-4. Test any endpoint directly from the browser
+3. Click **"Authorize"** to save the credentials
+4. All subsequent requests will include the authentication header
 
-### Authentication Endpoints
+### API Base URL
 
-Base URL: `http://localhost:8080/v1`
+```
+http://localhost:8080/v1
+```
+
+All endpoints are prefixed with `/v1` for API versioning.
 
 #### Register User
 ```http
@@ -494,19 +624,19 @@ Content-Type: application/json
 
 {
   "name": "John Doe",
-  "email": "john@example.com",
-  "password": "securePassword123",
-  "phoneNumber": "+5511999999999"
+  "email": "john.doe@example.com",
+  "password": "SecurePassword123!",
+  "phoneNumber": "+15555551234"
 }
 ```
 
-Response: `201 Created`
+**Response:** `201 Created`
 ```json
 {
   "id": 1,
   "name": "John Doe",
-  "email": "john@example.com",
-  "phoneNumber": "+5511999999999",
+  "email": "john.doe@example.com",
+  "phoneNumber": "+15555551234",
   "role": "NORMAL"
 }
 ```
@@ -517,21 +647,21 @@ POST /v1/auth/login
 Content-Type: application/json
 
 {
-  "email": "john@example.com",
-  "password": "securePassword123"
+  "email": "john.doe@example.com",
+  "password": "SecurePassword123!"
 }
 ```
 
-Response: `200 OK`
+**Response:** `200 OK`
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsInVzZXJfaWQiOjEsInJvbGVzIjpbIk5PUk1BTCJdLCJpYXQiOjE3MDk5MTQ4MDB9.signature"
 }
 ```
 
-### Person Endpoints
+### Person Management Endpoints
 
-All endpoints except auth require `Authorization: Bearer {token}` header.
+**Note:** All endpoints require `Authorization: Bearer {token}` header.
 
 #### Get All Persons
 ```http
@@ -545,23 +675,27 @@ GET /v1/persons/{personId}
 Authorization: Bearer {token}
 ```
 
-#### Update Person
+#### Update Person Profile
 ```http
 PUT /v1/persons/{personId}
 Authorization: Bearer {token}
 Content-Type: application/json
 
 {
-  "name": "John Updated",
-  "phoneNumber": "+5511988888888"
+  "name": "John Updated Doe",
+  "phoneNumber": "+15555559999"
 }
 ```
 
-#### Delete Person (Admin only)
+**Response:** `200 OK` with updated person object
+
+#### Delete Person (Admin Only)
 ```http
 DELETE /v1/persons/{personId}
 Authorization: Bearer {token}
 ```
+
+**Response:** `204 No Content`
 
 ### Connection Request Endpoints
 
@@ -576,9 +710,16 @@ Content-Type: application/json
 }
 ```
 
-Connection types: `PARTNER`, `FAMILY`, `FRIEND`, `BUSINESS_PARTNER`, `MENTOR`, `REFERRAL`, `COLLEAGUE`, `BUDDY`, `ACQUAINTANCE`
+**Connection Types:**
+- `PARTNER`, `FAMILY` (Tier 1, Weight 1)
+- `FRIEND`, `BUSINESS_PARTNER` (Tier 2, Weight 2)
+- `MENTOR`, `REFERRAL` (Tier 3, Weight 3)
+- `COLLEAGUE`, `BUDDY` (Tier 4, Weight 4)
+- `ACQUAINTANCE` (Tier 5, Weight 5)
 
-#### Accept/Reject Connection Request
+**Response:** `201 Created` with request details
+
+#### Accept or Reject Connection Request
 ```http
 PUT /v1/request-connections/{requestId}
 Authorization: Bearer {token}
@@ -589,7 +730,11 @@ Content-Type: application/json
 }
 ```
 
-Status values: `ACCEPTED`, `REJECTED`
+**Status Values:** `ACCEPTED`, `REJECTED`
+
+**Response:** `200 OK`
+- When `ACCEPTED`: Creates bidirectional `CONNECTED_WITH` relationship
+- When `REJECTED`: Updates request status without creating connection
 
 #### Get My Connection Requests
 ```http
@@ -597,19 +742,19 @@ GET /v1/request-connections/me
 Authorization: Bearer {token}
 ```
 
-Returns both incoming and outgoing requests.
+**Response:** `200 OK` with both incoming and outgoing connection requests
 
-### Connection Endpoints
+### Connection Management Endpoints
 
-#### Get My Connections
+#### Get My Active Connections
 ```http
 GET /v1/connections/me
 Authorization: Bearer {token}
 ```
 
-Returns all established connections for the authenticated user.
+**Response:** `200 OK` with all established connections (accepted requests only)
 
-### Post Endpoints
+### Post Publishing Endpoints
 
 #### Create Post
 ```http
@@ -618,35 +763,39 @@ Authorization: Bearer {token}
 Content-Type: application/json
 
 {
-  "content": "Hello, Vinculo!"
+  "content": "Hello, Vinculo! Excited to connect with everyone."
 }
 ```
 
-Response: `201 Created`
+**Response:** `201 Created`
 ```json
 {
   "id": 42,
-  "content": "Hello, Vinculo!",
-  "createdAt": "2024-01-15T10:30:00",
+  "content": "Hello, Vinculo! Excited to connect with everyone.",
+  "createdAt": "2024-03-15T14:30:00",
   "authorId": 1
 }
 ```
 
-#### Get My Feed
+#### Get Personal Feed
 ```http
-GET /v1/posts?skip=0&limit=10
+GET /v1/posts?skip=0&limit=20
 Authorization: Bearer {token}
 ```
 
-Returns posts visible to the authenticated user.
+**Query Parameters:**
+- `skip` (optional): Number of posts to skip for pagination (default: 0)
+- `limit` (optional): Maximum posts to return (default: 10, max: 100)
 
-#### Get Posts by Author
+**Response:** `200 OK` with posts from your connections
+
+#### Get Posts by Specific User
 ```http
-GET /v1/posts/{authorId}?skip=0&limit=10
+GET /v1/posts/{authorId}?skip=0&limit=20
 Authorization: Bearer {token}
 ```
 
-Returns all posts published by a specific user.
+**Response:** `200 OK` with posts published by the specified user
 
 #### Delete Post
 ```http
@@ -654,58 +803,142 @@ DELETE /v1/posts/{postId}
 Authorization: Bearer {token}
 ```
 
-Response: `204 No Content`. Only the post owner can delete their own posts.
+**Response:** `204 No Content`
+
+**Authorization:** Only the post author can delete their own posts
+
+### Network Graph Visualization Endpoints
+
+#### Get My Network Graph
+```http
+GET /v1/graphs/me
+Authorization: Bearer {token}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "nodes": [
+    {
+      "id": "1",
+      "name": "John Doe",
+      "email": "john.doe@example.com"
+    },
+    {
+      "id": "2",
+      "name": "Jane Smith",
+      "email": "jane.smith@example.com"
+    }
+  ],
+  "edges": [
+    {
+      "source": "1",
+      "target": "2",
+      "type": "FRIEND",
+      "weight": 2
+    }
+  ]
+}
+```
+
+**Description:** Returns the complete social network graph for the authenticated user, including all direct connections.
+
+#### Get Network Graph for Any User
+```http
+GET /v1/graphs/{personId}
+Authorization: Bearer {token}
+```
+
+**Response:** `200 OK` with graph data structure (same format as above)
+
+**Description:** Visualize the social network of any user in the system. Useful for network analysis and relationship visualization.
+
+**Use Cases:**
+- Social network visualization in frontend applications
+- Graph analytics and pattern detection
+- Connection degree analysis
+- Network topology exploration
 
 ## 🗂️ Database Schema
 
-### Neo4j Graph Model
+### Neo4j Graph Data Model
 
-```
-Person Node:
-- id: Long
-- name: String
-- email: String (unique)
-- password: String (BCrypt hashed)
-- phoneNumber: String (E.164 format)
-- role: String (ADMIN | NORMAL)
+Vinculo's data model leverages Neo4j's native graph structure for efficient relationship traversal and natural modeling of social connections.
 
-RequestConnection Node:
-- id: Long
-- type: String (connection type)
-- status: String (PENDING | ACCEPTED | REJECTED)
-- createdAt: DateTime
+#### Node Types
 
-Post Node:
-- id: Long
-- content: String
-- createdAt: DateTime
-
-Relationships:
-- Person -[FROM]-> RequestConnection -[TO]-> Person
-  (represents a connection request)
-
-- Person -[CONNECTED_WITH {type, weight}]-> Person
-  (bidirectional, created when request is accepted)
-
-- Person -[AUTHORED]-> Post
-  (person is the author of the post)
+**Person Node**
+```cypher
+(:Person {
+  id: Long,              // Unique identifier
+  name: String,          // Full name
+  email: String,         // Email address (unique constraint)
+  password: String,      // BCrypt hashed password
+  phoneNumber: String,   // E.164 formatted international phone number
+  role: String           // User role: "ADMIN" or "NORMAL"
+})
 ```
 
-### Connection Types and Weights
+**RequestConnection Node**
+```cypher
+(:RequestConnection {
+  id: Long,              // Unique identifier
+  type: String,          // Connection type (FRIEND, FAMILY, etc.)
+  status: String,        // Request status: "PENDING", "ACCEPTED", or "REJECTED"
+  createdAt: DateTime    // Timestamp of request creation
+})
+```
 
-| Type | Weight | Tier | Description |
-|------|--------|------|-------------|
-| PARTNER | 1 | 1 | Life/romantic partner |
-| FAMILY | 1 | 1 | Family member |
-| FRIEND | 2 | 2 | Close friend |
-| BUSINESS_PARTNER | 2 | 2 | Business partner |
-| MENTOR | 3 | 3 | Mentor/mentee |
-| REFERRAL | 3 | 3 | Professional referral |
-| COLLEAGUE | 4 | 4 | Work colleague |
-| BUDDY | 4 | 4 | Casual friend |
-| ACQUAINTANCE | 5 | 5 | Acquaintance |
+**Post Node**
+```cypher
+(:Post {
+  id: Long,              // Unique identifier
+  content: String,       // Post content/text
+  createdAt: DateTime    // Publication timestamp
+})
+```
 
-Lower weight indicates closer relationship.
+#### Relationship Types
+
+**Connection Request Flow**
+```cypher
+(:Person)-[:FROM]->(:RequestConnection)-[:TO]->(:Person)
+```
+Represents a connection request from one person to another. The intermediate `RequestConnection` node stores metadata about the request.
+
+**Established Connection** (Created when request is accepted)
+```cypher
+(:Person)-[:CONNECTED_WITH {type: String, weight: Integer}]->(:Person)
+```
+Bidirectional relationship created when a connection request is accepted. Both persons have this relationship pointing to each other.
+
+**Post Authorship**
+```cypher
+(:Person)-[:AUTHORED]->(:Post)
+```
+Links a person to posts they have created.
+
+### Connection Type Taxonomy
+
+Vinculo categorizes connections into nine types with associated weights, enabling relationship-aware queries and network analysis.
+
+| Connection Type | Weight | Tier | Semantic Meaning |
+|----------------|--------|------|------------------|
+| PARTNER | 1 | 1 | Life partner or romantic relationship |
+| FAMILY | 1 | 1 | Family member (immediate or extended) |
+| FRIEND | 2 | 2 | Close personal friend |
+| BUSINESS_PARTNER | 2 | 2 | Business partner or co-founder |
+| MENTOR | 3 | 3 | Mentor or mentee relationship |
+| REFERRAL | 3 | 3 | Professional referral or recommendation |
+| COLLEAGUE | 4 | 4 | Work colleague or team member |
+| BUDDY | 4 | 4 | Casual friend or acquaintance with shared interests |
+| ACQUAINTANCE | 5 | 5 | Loose connection or someone met briefly |
+
+**Weight Semantics:** Lower weight values indicate closer, more significant relationships. This enables:
+- Prioritization of feed content from closer connections
+- Social graph algorithms (influence calculation, recommendation engines)
+- Privacy controls based on relationship strength
+- Network distance calculations
 
 ### Graph Database Visual Model
 
@@ -738,102 +971,399 @@ graph TB
 
 ## 🔒 Security
 
-### Authentication
-- **JWT Tokens**: HMAC-SHA256 algorithm
-- **Token Expiration**: 1 hour (configurable)
-- **Token Claims**: email (subject), user_id, roles
-- **Stateless**: No server-side session storage
+Vinculo implements defense-in-depth security principles with multiple layers of protection.
+
+### Authentication Architecture
+
+**JWT (JSON Web Tokens)**
+- **Algorithm**: HMAC-SHA256 (HS256)
+- **Token Expiration**: 1 hour (configurable via application properties)
+- **Claims Structure**:
+  - `sub` (Subject): User email address
+  - `user_id`: Person identifier for quick lookups
+  - `roles`: Array of user roles for authorization
+  - `iat` (Issued At): Token generation timestamp
+  - `exp` (Expiration): Token expiration timestamp
+- **Stateless Design**: No server-side session storage required, enabling horizontal scalability
 
 ### Password Security
-- **BCrypt**: Adaptive hashing algorithm
-- **Salt**: Automatically generated per password
-- **Work Factor**: Configurable strength
 
-### Authorization
-- **Role-Based Access Control (RBAC)**
-  - `NORMAL`: Standard user permissions
-  - `ADMIN`: Full system access including user deletion
-- **Method-level security**: `@PreAuthorize` annotations
-- **Resource ownership**: Users can only modify their own data
+**BCrypt Adaptive Hashing**
+- **Algorithm**: BCrypt with automatic salt generation
+- **Work Factor**: Default strength (configurable, typically 10-12 rounds)
+- **Salt**: Unique per password, stored in hash output
+- **Future-Proof**: Work factor can be increased as computational power grows
 
-### Security Best Practices
+### Authorization Model
 
-✅ Implemented:
-- Password hashing (BCrypt)
-- JWT authentication
-- Input validation
-- Parameterized database queries
+**Role-Based Access Control (RBAC)**
+
+| Role | Permissions |
+|------|-------------|
+| `NORMAL` | - Manage own profile<br>- Create/manage connections<br>- Publish and view posts<br>- View network graphs |
+| `ADMIN` | - All NORMAL permissions<br>- Delete any user account<br>- System-wide user management |
+
+**Implementation Mechanisms:**
+- `@PreAuthorize` annotations on controller methods
+- Spring Security expression language for complex rules
+- Resource ownership validation in service layer
+
+### Security Controls Implemented
+
+✅ **Authentication & Session Management**
+- Stateless JWT authentication
+- Secure password hashing (BCrypt)
+- Token expiration handling
+- Protected endpoints with bearer token validation
+
+✅ **Input Validation**
+- Jakarta Bean Validation on all DTOs
+- Email format validation (RFC 5322)
+- Phone number validation (E.164 format via libphonenumber)
+- SQL/Cypher injection prevention through parameterized queries
+
+✅ **Authorization**
+- Role-based access control
+- Resource ownership verification
+- Method-level security annotations
+
+✅ **Data Protection**
+- Passwords never stored in plaintext
+- Sensitive data excluded from logs
+- Environment-based configuration for secrets
+
+✅ **API Security**
 - CORS configuration
-- Environment-based secrets
+- HTTP security headers
+- Content-Type validation
 
-⚠️ Production Recommendations:
-- Use HTTPS/TLS in production
-- Implement rate limiting
-- Use a secrets management system (not .env files)
-- Configure proper CORS origins
-- Set up monitoring and audit logs
-- Keep dependencies updated
-- Use a strong JWT secret key (256+ bits)
+### Production Security Recommendations
+
+⚠️ **Critical for Production Deployment:**
+
+**Transport Security**
+- Enable HTTPS/TLS for all communications
+- Use valid SSL/TLS certificates (Let's Encrypt, commercial CA)
+- Enforce HSTS (HTTP Strict Transport Security)
+- Disable HTTP fallback
+
+**Secret Management**
+- Use dedicated secrets management (HashiCorp Vault, AWS Secrets Manager, Azure Key Vault)
+- **Never commit** `.env` files or secrets to version control
+- Generate strong JWT secret keys (256+ bits, base64-encoded random bytes)
+- Rotate secrets regularly (JWT keys, database passwords)
+
+**Rate Limiting & DoS Prevention**
+- Implement API rate limiting (Spring Cloud Gateway, nginx)
+- Configure request throttling per user/IP
+- Set maximum request size limits
+- Enable connection pooling with limits
+
+**CORS Configuration**
+- Restrict allowed origins to specific domains (not `*`)
+- Limit allowed HTTP methods
+- Configure allowed headers explicitly
+- Enable credentials only when necessary
+
+**Monitoring & Auditing**
+- Implement comprehensive logging (authentication attempts, authorization failures)
+- Set up security event monitoring and alerting
+- Log security-relevant events without exposing sensitive data
+- Regular security audit log reviews
+
+**Dependency Management**
+- Keep all dependencies up to date
+- Regular security scanning (OWASP Dependency-Check, Snyk)
+- Subscribe to security advisories for frameworks and libraries
+- Automated dependency updates with testing
+
+**Database Security**
+- Use separate credentials for application vs. administrative access
+- Enable Neo4j authentication and encryption
+- Regular database backups with encryption at rest
+- Network isolation (private subnets, firewall rules)
+- Principle of least privilege for database access
+
+**Additional Hardening**
+- Disable unnecessary endpoints and features
+- Implement security headers (CSP, X-Frame-Options, X-Content-Type-Options)
+- Enable request/response sanitization
+- Regular penetration testing and security audits
 
 ## 🧪 Development
 
-### Build the Project
+### Build & Package
+
+**Clean Build**
 ```bash
 ./mvnw clean install
 ```
 
-### Run Tests
+**Package without Tests** (faster for development iterations)
+```bash
+./mvnw clean package -DskipTests
+```
+
+**Create Executable JAR**
+```bash
+./mvnw clean package
+# Output: target/vinculo-0.0.1-SNAPSHOT.jar
+```
+
+### Testing
+
+**Run All Tests**
 ```bash
 ./mvnw test
 ```
 
-### Run the Application
+**Run Specific Test Class**
+```bash
+./mvnw test -Dtest=LoginUseCaseTest
+```
+
+**Run Tests with Coverage** (if configured)
+```bash
+./mvnw clean verify
+```
+
+**Test Categories:**
+- **Unit Tests**: Domain logic testing in isolation (use cases, commands)
+- **Integration Tests**: Module integration testing with test containers
+- **API Tests**: HTTP endpoint testing with MockMvc
+
+### Running the Application
+
+**Development Mode** (with auto-restart)
 ```bash
 ./mvnw spring-boot:run
 ```
 
-### Code Style
-- Java naming conventions
-- Lombok annotations for reducing boilerplate
-- Clean Code principles
-- Comprehensive exception handling
+**With Custom Profile**
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+**Debug Mode** (with remote debugging on port 5005)
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
+```
+
+### Code Quality
+
+**Code Style**
+- Follow Java naming conventions (PascalCase for classes, camelCase for methods/variables)
+- Use Lombok annotations to reduce boilerplate (`@Data`, `@Builder`, `@AllArgsConstructor`)
+- Maximum line length: 120 characters
+- Use meaningful variable and method names
+
+**Architecture Principles**
+- Maintain strict layer separation (domain, application, infrastructure)
+- Dependencies flow inward (toward domain layer)
+- Use immutable records for commands and DTOs
+- Keep use cases focused on single responsibilities
+- Write comprehensive exception handling
+
+**Testing Standards**
+- Aim for high test coverage on domain layer (>80%)
+- Use meaningful test names describing scenarios
+- Follow AAA pattern (Arrange, Act, Assert)
+- Mock external dependencies, test behavior not implementation
+- Write integration tests for critical paths
+
+### Project Structure Best Practices
+
+**Adding New Features:**
+1. Create domain model and use cases first (test-driven)
+2. Define port interfaces for external dependencies
+3. Implement application layer (controllers, handlers, DTOs)
+4. Add infrastructure adapters last
+5. Document new endpoints in Swagger annotations
+6. Write integration tests
+
+**Module Independence:**
+- Each module should be independently deployable conceptually
+- Avoid circular dependencies between modules
+- Share code through `share/` package only when truly cross-cutting
+- Prefer duplication over inappropriate coupling
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please follow these steps:
+Contributions are welcome and appreciated! This project follows standard open-source contribution practices.
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Commit your changes: `git commit -m 'Add my feature'`
-4. Push to the branch: `git push origin feature/my-feature`
-5. Open a Pull Request
+### Getting Started
 
-### Guidelines
-- Follow existing code style
-- Write meaningful commit messages
-- Add tests for new features
-- Update documentation as needed
-- Ensure all tests pass before submitting
+1. **Fork the repository** on GitHub
+2. **Clone your fork** locally:
+```bash
+git clone https://github.com/your-username/vinculo.git
+cd vinculo
+```
+3. **Create a feature branch**:
+```bash
+git checkout -b feature/descriptive-feature-name
+```
+
+### Development Workflow
+
+1. **Make your changes** following the architecture patterns in the codebase
+2. **Write tests** for new functionality (unit tests and integration tests as appropriate)
+3. **Ensure all tests pass**:
+```bash
+./mvnw test
+```
+4. **Commit your changes** with clear, descriptive messages:
+```bash
+git commit -m "feat: add connection recommendation algorithm"
+git commit -m "fix: resolve authentication token expiration issue"
+git commit -m "docs: update API documentation for graph endpoints"
+```
+5. **Push to your fork**:
+```bash
+git push origin feature/descriptive-feature-name
+```
+6. **Open a Pull Request** on GitHub with:
+   - Clear description of changes and motivation
+   - Reference to any related issues
+   - Screenshots for UI changes (if applicable)
+   - Test coverage information
+
+### Contribution Guidelines
+
+**Code Quality Standards**
+- Follow existing architectural patterns (Hexagonal, DDD)
+- Maintain layer separation and dependency rules
+- Write clean, self-documenting code with meaningful names
+- Use Java 21 features appropriately
+- Follow existing code style and conventions
+
+**Testing Requirements**
+- Add unit tests for business logic (domain layer)
+- Add integration tests for critical workflows
+- Ensure existing tests continue to pass
+- Aim for >80% coverage on new code
+
+**Documentation**
+- Update README.md for new features or API changes
+- Add JavaDoc comments for public APIs and complex logic
+- Include Swagger/OpenAPI annotations on new endpoints
+- Update architecture diagrams if adding new modules
+
+**Commit Message Format**
+Use conventional commits format:
+- `feat:` New feature
+- `fix:` Bug fix
+- `docs:` Documentation changes
+- `refactor:` Code refactoring without behavior change
+- `test:` Adding or updating tests
+- `chore:` Build process or auxiliary tool changes
+
+**Pull Request Process**
+1. Ensure your PR addresses a single concern
+2. Keep changes focused and minimal
+3. Provide clear description and context
+4. Be responsive to review feedback
+5. Update documentation and tests as needed
+
+### Code of Conduct
+
+- Be respectful and professional in all interactions
+- Welcome newcomers and help them get started
+- Provide constructive feedback in code reviews
+- Focus on code quality and technical merit
+- Report unacceptable behavior to maintainers
+
+### Areas for Contribution
+
+**Feature Enhancements:**
+- Connection recommendation engine
+- Advanced search capabilities
+- Real-time notifications
+- Content moderation tools
+- Analytics dashboard
+
+**Technical Improvements:**
+- Performance optimization
+- Additional test coverage
+- Security enhancements
+- API versioning strategy
+- Caching layer implementation
+
+**Documentation:**
+- Tutorial videos or blog posts
+- API client examples in various languages
+- Deployment guides for different platforms
+- Architecture decision records (ADRs)
+
+### Questions?
+
+- Open an issue for bug reports or feature requests
+- Use discussions for questions and general feedback
+- Check existing issues before creating new ones
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for complete details.
+
+The MIT License is a permissive open-source license that allows:
+- ✅ Commercial use
+- ✅ Modification
+- ✅ Distribution
+- ✅ Private use
+
+With minimal restrictions:
+- ⚠️ Must include copyright notice and license text
+- ⚠️ No liability or warranty provided
 
 ## 👨‍💻 Author
 
 **Luca Eckert**
 - GitHub: [@Luca5Eckert](https://github.com/Luca5Eckert)
+- Project: [Vinculo](https://github.com/Luca5Eckert/vinculo)
+
+This project represents a professional implementation of modern software architecture patterns, demonstrating expertise in:
+- Clean Architecture and Hexagonal Architecture (Ports & Adapters)
+- Domain-Driven Design (DDD)
+- Graph Database Technology (Neo4j)
+- Spring Boot Enterprise Development
+- RESTful API Design
+- Security Best Practices (JWT, BCrypt, RBAC)
 
 ## 🙏 Acknowledgments
 
-- Spring Boot for the excellent framework
-- Neo4j for powerful graph database technology
-- The open-source community
+This project leverages exceptional open-source technologies and frameworks:
+
+- **[Spring Framework](https://spring.io/)** - Comprehensive infrastructure support for enterprise Java applications
+- **[Neo4j](https://neo4j.com/)** - Leading graph database platform enabling natural relationship modeling
+- **[Project Lombok](https://projectlombok.org/)** - Reducing Java boilerplate through compile-time code generation
+- **[SpringDoc OpenAPI](https://springdoc.org/)** - Automated OpenAPI documentation generation
+- **[JJWT](https://github.com/jwtk/jjwt)** - Robust JWT implementation for Java
+
+Special recognition to the vibrant open-source community whose collective efforts make projects like this possible.
+
+## 🔗 Additional Resources
+
+**Documentation & Learning**
+- [Neo4j Cypher Query Language](https://neo4j.com/docs/cypher-manual/current/)
+- [Spring Security Architecture](https://spring.io/guides/topicals/spring-security-architecture)
+- [Hexagonal Architecture Guide](https://alistair.cockburn.us/hexagonal-architecture/)
+- [Domain-Driven Design](https://martinfowler.com/bliki/DomainDrivenDesign.html)
+
+**Related Projects**
+- [Spring Data Neo4j](https://spring.io/projects/spring-data-neo4j)
+- [Neo4j Graph Data Science](https://neo4j.com/product/graph-data-science/)
 
 ---
 
 <div align="center">
 
-**Built with Spring Boot and Neo4j**
+**Built with ❤️ using Spring Boot 4.0 and Neo4j 5**
+
+*Demonstrating enterprise-grade graph-based social networking architecture*
+
+[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.2-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Neo4j](https://img.shields.io/badge/Neo4j-5.0-blue.svg)](https://neo4j.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 </div>
