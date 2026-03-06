@@ -7,13 +7,13 @@ import com.vinculo.module.graph.domain.use_case.GetGraphNetworkUseCase;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetGraphNetworkHandler {
+public class GetMyGraphNetworkHandler {
 
     private final GetGraphNetworkUseCase getGraphNetworkUseCase;
 
     private final GraphMapper graphMapper;
 
-    public GetGraphNetworkHandler(GetGraphNetworkUseCase getGraphNetworkUseCase, GraphMapper graphMapper) {
+    public GetMyGraphNetworkHandler(GetGraphNetworkUseCase getGraphNetworkUseCase, GraphMapper graphMapper) {
         this.getGraphNetworkUseCase = getGraphNetworkUseCase;
         this.graphMapper = graphMapper;
     }

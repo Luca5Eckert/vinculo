@@ -29,7 +29,7 @@ public class GraphRepositoryAdapter implements GraphRepository {
 
     @Override
     public GraphNetwork execute(GetGraphNetworkQuery query) {
-        return buildGraphNetwork(query.userId());
+        return buildGraphNetwork(query.personId());
     }
 
     private GraphNetwork buildGraphNetwork(String userId) {

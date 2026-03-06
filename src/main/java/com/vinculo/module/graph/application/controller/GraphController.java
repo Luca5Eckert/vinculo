@@ -1,7 +1,8 @@
 package com.vinculo.module.graph.application.controller;
 
 import com.vinculo.module.graph.application.dto.GraphResponse;
-import com.vinculo.module.graph.application.handler.GetGraphNetworkHandler;
+import com.vinculo.module.graph.application.handler.GetMyGraphNetworkHandler;
+import com.vinculo.module.graph.application.handler.GetPersonGraphNetworkHandler;
 import com.vinculo.share.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,12 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Graph", description = "Network graph APIs")
 public class GraphController {
 
-    private final GetGraphNetworkHandler getGraphNetworkHandler;
+    private final GetMyGraphNetworkHandler getMyGraphNetworkHandler;
+    private final GetPersonGraphNetworkHandler getPersonGraphNetworkHandler;
 
     private final AuthenticationService authenticationService;
 
-    public GraphController(GetGraphNetworkHandler getGraphNetworkHandler, AuthenticationService authenticationService) {
-        this.getGraphNetworkHandler = getGraphNetworkHandler;
+    public GraphController(GetMyGraphNetworkHandler getMyGraphNetworkHandler, GetPersonGraphNetworkHandler getPersonGraphNetworkHandler, AuthenticationService authenticationService) {
+        this.getMyGraphNetworkHandler = getMyGraphNetworkHandler;
+        this.getPersonGraphNetworkHandler = getPersonGraphNetworkHandler;
         this.authenticationService = authenticationService;
     }
 
@@ -39,7 +42,7 @@ public class GraphController {
     public ResponseEntity<GraphResponse> getFeed(){
         var personId = authenticationService.getAuthenticatedPersonId();
 
-        var response = getGraphNetworkHandler.handle(personId);
+        var response = getMyGraphNetworkHandler.handle(personId);
 
         return ResponseEntity.ok(response);
     }
@@ -53,7 +56,9 @@ public class GraphController {
     })
     public ResponseEntity<GraphResponse> getGraphForPerson(
             @Parameter(description = "ID of the person whose network graph to retrieve") @PathVariable String personId){
-        var response = getGraphNetworkHandler.handle(personId);
+        var personAuthenticatedId = authenticationService.getAuthenticatedPersonId();
+
+        var response = getPersonGraphNetworkHandler.handle(personId, personAuthenticatedId);
 
         return ResponseEntity.ok(response);
     }

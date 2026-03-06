@@ -53,7 +53,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Invalid credentials", content = @Content)
     })
     public ResponseEntity<String> login(@Validated @RequestBody LoginRequest request) {
-        String token = loginHandler.handle(request);
+         String token = loginHandler.handle(request);
 
         return ResponseEntity
                 .ok(token);
