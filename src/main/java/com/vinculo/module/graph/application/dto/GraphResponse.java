@@ -5,7 +5,7 @@ import java.util.List;
 public record GraphResponse(
         String mainNodeId,
         List<NodeResponse> nodes,
-        List<EdgeResponse> edgeResponses
+        List<EdgeResponse> edges
 ) {
 
 }
